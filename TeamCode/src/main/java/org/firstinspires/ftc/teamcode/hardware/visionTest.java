@@ -1,17 +1,15 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.hardware.Chassis;
+import org.firstinspires.ftc.teamcode.hardware.TeamIMU;
+import org.firstinspires.ftc.teamcode.hardware.Vision;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
 
 @Autonomous
 public class visionTest extends OpMode {
@@ -22,11 +20,10 @@ public class visionTest extends OpMode {
     AprilTagDetection myAprilTagDetection;         // current detection in for() loop
     int myAprilTagIdCode;                           // ID code of current detection, in for() loop
 
-
     @Override
     public void init() {
         vision = new Vision(hardwareMap);
-        chassis = new Chassis(hardwareMap, (org.firstinspires.ftc.teamcode.IMU) imu, gamepad1);
+        chassis = new Chassis(hardwareMap, (TeamIMU) imu, gamepad1);
     }
 
     @Override

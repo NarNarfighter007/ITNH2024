@@ -1,24 +1,22 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.teamcode.IMU;
 
 public class Chassis {
     public DcMotor frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
 
     Gamepad gamepad1;
     LinearOpMode opMode;
-    IMU imu;
+    TeamIMU imu;
     double headingOffset = 0;
     double autonDriveSpeed = 0.6, teleopDriveSpeed = 0.8, scaleFactor = 1.0;
     //SampleMecanumDrive drive = new SampleMecanumDrive(opMode.hardwareMap);
     //Teleop Constructor
-    public Chassis(HardwareMap hardwareMap, IMU imu, Gamepad gamepad1){
+    public Chassis(HardwareMap hardwareMap, TeamIMU imu, Gamepad gamepad1){
         this.gamepad1 = gamepad1;
         this.imu = imu;
 
@@ -27,10 +25,10 @@ public class Chassis {
 //        frontRightMotor = hardwareMap.get(DcMotor.class, "FRM03");
 //        backRightMotor = hardwareMap.get(DcMotor.class, "BRM01");
 
-        frontLeftMotor = hardwareMap.get(DcMotor.class, "frontLeft");
-        backLeftMotor = hardwareMap.get(DcMotor.class, "backLeft");
-        frontRightMotor = hardwareMap.get(DcMotor.class, "frontRight");
-        backRightMotor = hardwareMap.get(DcMotor.class, "backRight");
+        frontLeftMotor = hardwareMap.get(DcMotor.class, "FLM12");
+        backLeftMotor = hardwareMap.get(DcMotor.class, "BLM13");
+        frontRightMotor = hardwareMap.get(DcMotor.class, "FRM02");
+        backRightMotor = hardwareMap.get(DcMotor.class, "BRM03");
 
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);

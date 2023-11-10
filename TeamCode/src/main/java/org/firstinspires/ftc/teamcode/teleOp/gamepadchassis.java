@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.teleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -86,7 +86,7 @@ public class gamepadchassis extends OpMode {
 
         intake.setPower(gamepad1.left_trigger);
 
-        drone.setPosition(Math.max(0.0, 0.6-gamepad1.right_trigger));
+        drone.setPosition(Math.min(0.6, gamepad1.right_trigger));
 
       /*  if (gamepad1.dpad_up) {
             transferMotor.setPower(-1);

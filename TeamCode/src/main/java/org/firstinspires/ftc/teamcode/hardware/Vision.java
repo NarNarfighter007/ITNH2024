@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.hardware;
 
 import android.graphics.Camera;
 import android.util.Size;

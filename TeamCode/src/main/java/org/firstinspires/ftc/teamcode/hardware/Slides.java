@@ -1,5 +1,12 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import android.drm.DrmStore;
+
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -77,5 +84,30 @@ public class Slides {
 
     public int getSlideTargetPos(){
         return slideMotor.getTargetPosition();
+    }
+
+    public class Dispense implements Action{
+        boolean dispensed = false;
+        public void init(){
+            slideMotor.setPower(slidePower);
+            boxServo.setPosition(box);
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            slideMotor.setTargetPosition(low);
+            telemetryPacket.put("Slide pos", slideMotor.getCurrentPosition());
+
+            if(slideMotor.getCurrentPosition() == low){
+                fourbarServo.setPosition(outtake);
+                dropServo.setPosition(drop);
+                dispensed = true;
+            }
+            return !dispensed;
+        }
+    }
+
+    public Action dispense(){
+
     }
 }

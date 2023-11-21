@@ -107,7 +107,7 @@ public class Slides {
         }
     }
 
-    public Action dispense(){
-
-    }
+//    public Action dispense(){
+//
+//    }
 }

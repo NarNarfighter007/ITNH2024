@@ -21,7 +21,7 @@ public class ocvtestBlue extends LinearOpMode {
     private static final int CAMERA_WIDTH  = 800; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 448; // height of wanted camera resolution
 
-    private double CrLowerUpdate = 160;
+    private double CrLowerUpdate = 130;
     private double CbLowerUpdate = 100;
     private double CrUpperUpdate = 255;
     private double CbUpperUpdate = 255;
@@ -93,9 +93,10 @@ public class ocvtestBlue extends LinearOpMode {
             testing(myPipeline);
 
             telemetry.addData("RectArea: ", myPipeline.getRectArea());
+            telemetry.addData("RectLocX: ", myPipeline.getRectMidpointX());
             telemetry.update();
 
-            if(myPipeline.getRectArea() > 2000){
+            if(myPipeline.getRectArea() > 0){
                 if(myPipeline.getRectMidpointX() > 400){
                     AUTONOMOUS_C();
                 }

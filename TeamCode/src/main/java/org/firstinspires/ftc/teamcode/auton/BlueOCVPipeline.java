@@ -159,7 +159,7 @@ public class BlueOCVPipeline extends OpenCvPipeline {
             ), HOT_PINK, 2);
 
             // Display Data
-            Imgproc.putText(input, "Area: " + getRectArea() + " Midpoint: " + getRectMidpointXY().x + " , " + getRectMidpointXY().y, new Point(5, CAMERA_HEIGHT - 5), 0, 0.6, new Scalar(255, 255, 255), 2);
+            Imgproc.putText(input, "Area: " + getRectArea() + " Midpoint: " + getRectMidpointXY().x + " , " + getRectMidpointXY().y, new Point(5, CAMERA_HEIGHT), 0, 0.6, new Scalar(255, 255, 255), 2);
 
             loopCounter++;
         } catch (Exception e) {

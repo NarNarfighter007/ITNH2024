@@ -21,10 +21,10 @@ public class ocvtestRed extends LinearOpMode {
     private static final int CAMERA_WIDTH  = 800; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 448; // height of wanted camera resolution
 
-    private double CrLowerUpdate = 160;
-    private double CbLowerUpdate = 100;
+    private double CrLowerUpdate = 150;
+    private double CbLowerUpdate = 0.0;
     private double CrUpperUpdate = 255;
-    private double CbUpperUpdate = 255;
+    private double CbUpperUpdate = 128;
 
     public static double borderLeftX    = 0.0;   //fraction of pixels from the left side of the cam to skip
     public static double borderRightX   = 0.0;   //fraction of pixels from the right of the cam to skip
@@ -90,13 +90,13 @@ public class ocvtestRed extends LinearOpMode {
                 telemetry.addData("Exception: ", myPipeline.debug);
             }
             // Only use this line of the code when you want to find the lower and upper values
-            testing(myPipeline);
+          //  testing(myPipeline);
 
             telemetry.addData("RectArea: ", myPipeline.getRectArea());
             telemetry.update();
 
-            if(myPipeline.getRectArea() > 2000){
-                if(myPipeline.getRectMidpointX() > 400){
+            if(myPipeline.getRectArea() > 9000){
+                if(myPipeline.getRectMidpointX() > 500){
                     AUTONOMOUS_C();
                 }
                 else if(myPipeline.getRectMidpointX() > 200){

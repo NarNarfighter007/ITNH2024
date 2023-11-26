@@ -21,9 +21,9 @@ public class ocvtestBlue extends LinearOpMode {
     private static final int CAMERA_WIDTH  = 800; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 448; // height of wanted camera resolution
 
-    private double CrLowerUpdate = 130;
-    private double CbLowerUpdate = 100;
-    private double CrUpperUpdate = 255;
+    private double CrLowerUpdate = 0.0;
+    private double CbLowerUpdate = 140.0;
+    private double CrUpperUpdate = 190.0;
     private double CbUpperUpdate = 255;
 
     public static double borderLeftX    = 0.0;   //fraction of pixels from the left side of the cam to skip
@@ -43,7 +43,7 @@ public class ocvtestBlue extends LinearOpMode {
 //    public static Scalar scalarUpperYCrCb = new Scalar(255.0, 170.0, 120.0);
 
     //Blue
-    public static Scalar scalarLowerYCrCb = new Scalar(  0.0, 0.0, 140.0);
+    public static Scalar scalarLowerYCrCb = new Scalar(0.0, 0.0, 140.0);
     public static Scalar scalarUpperYCrCb = new Scalar(255.0,190.0 ,255.0 );
 
     @Override
@@ -76,9 +76,9 @@ public class ocvtestBlue extends LinearOpMode {
             }
         });
         // Only if you are using ftcdashboard
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
-        FtcDashboard.getInstance().startCameraStream(webcam, 10);
+       FtcDashboard dashboard = FtcDashboard.getInstance();
+       telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+       FtcDashboard.getInstance().startCameraStream(webcam, 10);
 
         telemetry.update();
         waitForStart();
@@ -96,8 +96,8 @@ public class ocvtestBlue extends LinearOpMode {
             telemetry.addData("RectLocX: ", myPipeline.getRectMidpointX());
             telemetry.update();
 
-            if(myPipeline.getRectArea() > 0){
-                if(myPipeline.getRectMidpointX() > 400){
+            if(myPipeline.getRectArea() > 9000){
+                if(myPipeline.getRectMidpointX() > 500){
                     AUTONOMOUS_C();
                 }
                 else if(myPipeline.getRectMidpointX() > 200){

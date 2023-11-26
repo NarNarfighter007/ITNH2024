@@ -16,7 +16,7 @@ import java.util.List;
 
 // Credits to team 7303 RoboAvatars, adjusted by team 3954 Pink to the Future
 
-public class OCVPipeline extends OpenCvPipeline {
+public class BlueOCVPipeline extends OpenCvPipeline {
     Scalar HOT_PINK = new Scalar(196, 23, 112);
 
 //    // Pink, the default color                         Y      Cr     Cb    (Do not change Y)
@@ -27,9 +27,9 @@ public class OCVPipeline extends OpenCvPipeline {
     //public static Scalar scalarLowerYCrCb = new Scalar(0.0, 100.0, 0.0);
     //public static Scalar scalarUpperYCrCb = new Scalar(255.0, 170.0, 120.0);
 
-    // Green                                             Y      Cr     Cb
-     public static Scalar scalarLowerYCrCb = new Scalar(  0.0, 0.0, 0.0);
-     public static Scalar scalarUpperYCrCb = new Scalar(255.0, 120.0, 120.0);
+    // Blue                                             Y      Cr     Cb
+    public static Scalar scalarLowerYCrCb = new Scalar(  0.0, 0.0, 140.0);
+    public static Scalar scalarUpperYCrCb = new Scalar(255.0,190.0 ,255.0 );
 
     // Use this picture for you own color https://github.com/PinkToTheFuture/OpenCV_FreightFrenzy_2021-2022/blob/main/YCbCr.jpeg
     // Note that the Cr and Cb values range between 0-255. this means that the origin of the coordinate system is (128,128)
@@ -59,7 +59,7 @@ public class OCVPipeline extends OpenCvPipeline {
 
     private final Object sync = new Object();
 
-    public OCVPipeline(double borderLeftX, double borderRightX, double borderTopY, double borderBottomY) {
+    public BlueOCVPipeline(double borderLeftX, double borderRightX, double borderTopY, double borderBottomY) {
         this.borderLeftX = borderLeftX;
         this.borderRightX = borderRightX;
         this.borderTopY = borderTopY;

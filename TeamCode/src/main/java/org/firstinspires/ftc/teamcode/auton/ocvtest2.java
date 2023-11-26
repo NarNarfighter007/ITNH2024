@@ -54,8 +54,8 @@ public class ocvtest2 extends LinearOpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
         //OpenCV Pipeline
-        OCVPipeline myPipeline;
-        webcam.setPipeline(myPipeline = new OCVPipeline(borderLeftX,borderRightX,borderTopY,borderBottomY));
+        BlueOCVPipeline myPipeline;
+        webcam.setPipeline(myPipeline = new BlueOCVPipeline(borderLeftX,borderRightX,borderTopY,borderBottomY));
         // Configuration of Pipeline
         myPipeline.configureScalarLower(scalarLowerYCrCb.val[0],scalarLowerYCrCb.val[1],scalarLowerYCrCb.val[2]);
         myPipeline.configureScalarUpper(scalarUpperYCrCb.val[0],scalarUpperYCrCb.val[1],scalarUpperYCrCb.val[2]);
@@ -109,7 +109,7 @@ public class ocvtest2 extends LinearOpMode {
             }
         }
     }
-    public void testing(OCVPipeline myPipeline){
+    public void testing(BlueOCVPipeline myPipeline){
         if(lowerruntime + 0.05 < getRuntime()){
             CrLowerUpdate += -gamepad1.left_stick_y;
             CbLowerUpdate += gamepad1.left_stick_x;

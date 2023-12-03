@@ -28,7 +28,7 @@ public class Teleop extends OpMode{
         slides = new Slides(hardwareMap, gamepad1, gamepad2);
         intake = new Intake(hardwareMap, gamepad1);
 //        vision = new Vision(hardwareMap);
-//        hang = new Hang(hardwareMap, gamepad1, gamepad2);
+        hang = new Hang(hardwareMap, gamepad1, gamepad2);
 //        airplane = new Airplane(hardwareMap, gamepad1, gamepad2);
     }
 
@@ -39,7 +39,8 @@ public class Teleop extends OpMode{
         slides.runSlidesPresets();
         intake.runIntake();
         slides.runDispenser();
-//        hang.runHang();
+        hang.runHang();
+        hang.runHook();
 //        airplane.runAirplane();
         telemetry.addData("slidePos", slides.getSlideCurPos());
     }

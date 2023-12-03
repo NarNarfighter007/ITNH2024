@@ -20,7 +20,9 @@ public class Slides {
     int slideTargetPosition = 0;
     final int down = 0, low = 1100, mid = 2530, high = 3400;
     final double slidePower = 0.8;
-    final double hold = 0.68, drop = 1.0, box = 0.4, intake = 0.90, outtake = 0.51; //outtake = 0.21
+//    final double hold = 0.68, drop = 1.0, box = 0.4, intake = 0.90, outtake = 0.51; //outtake = 0.21
+    final double hold = 0.25, drop = 0.55, box = 0.27, intake = .95, outtake = 0.55; //outtake = 0.21; hold = .32; drop = 0.5;
+
     final int slidesMin = 881;
     public Slides(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;

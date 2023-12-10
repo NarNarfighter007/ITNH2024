@@ -17,9 +17,9 @@ public class ServoTest extends OpMode {
 
     @Override
     public void loop() {
-        fourbarServo.setPosition(gamepad1.left_stick_y);
-//        dropServo.setPosition(0.7);
-        boxServo.setPosition(0.4);
+//        fourbarServo.setPosition(gamepad1.left_stick_y); //.85
+        dropServo.setPosition(gamepad1.left_stick_y);
+//        boxServo.setPosition(gamepad1.right_stick_y); //.29
         telemetry.addData("fourbar", fourbarServo.getPosition());
         telemetry.addData("drop", dropServo.getPosition());
         telemetry.addData("box", boxServo.getPosition());

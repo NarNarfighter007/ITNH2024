@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -28,5 +33,30 @@ public class Intake {
             transferMotor.setPower(0);
         }
     }
+    public class DepositPurple implements Action{
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            intakeMotor.setPower(-0.5);
+            return intakeMotor.getPower() != -0.5;
+        }
+    }
+
+    public class IntakeStack implements Action{
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            intakeMotor.setPower(intakePower);
+            transferMotor.setPower(transferPower);
+            new SleepAction(1.0);
+            intakeMotor.setPower(0);
+            transferMotor.setPower(0);
+            return false;
+        }
+    }
+    public Action depositPurple(){
+        return new DepositPurple();
+    }
+
 }
 

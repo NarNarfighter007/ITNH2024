@@ -20,7 +20,7 @@ public class Slides {
     int slideTargetPosition = 0;
     final int down = 0, low = 1100, mid = 2530, high = 3400;
     final double slidePower = 0.8;
-    final double hold = 0.68, drop = 1.0, box = 0.4, intake = 0.90, outtake = 0.51; //outtake = 0.21
+    final double hold = 0.23, drop = 0.45, box = 0.31, intake = .94, outtake = 0.51; //outtake = 0.21
     final int slidesMin = 881;
     public Slides(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;
@@ -96,9 +96,10 @@ public class Slides {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             slideMotor.setTargetPosition(low);
+            slideMotor.setPower(slidePower);
             telemetryPacket.put("Slide pos", slideMotor.getCurrentPosition());
 
-            if(slideMotor.getCurrentPosition() == low){
+            if(slideMotor.getCurrentPosition() >= low-20){
                 fourbarServo.setPosition(outtake);
                 dropServo.setPosition(drop);
                 dispensed = true;
@@ -107,7 +108,28 @@ public class Slides {
         }
     }
 
-//    public Action dispense(){
-//
-//    }
+    public class Retract implements Action{
+        boolean retracted = false;
+        public void init(){
+            fourbarServo.setPosition(intake);
+            dropServo.setPosition(hold);
+            boxServo.setPosition(box);
+        }
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            slideMotor.setPower(slidePower);
+            slideMotor.setTargetPosition(down);
+            if(slideMotor.getCurrentPosition() < 10){
+                retracted = true;
+            }
+            return !retracted;
+        }
+    }
+    public Action dispense(){
+        return new Dispense();
+    }
+
+    public Action retract(){
+        return new Retract();
+    }
 }

@@ -25,15 +25,20 @@ public class Intake {
         transferServo.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
+
     public void runIntake(){
         if(gamepad1.right_bumper) {
             intakeMotor.setPower(intakePower);
+        } else if(gamepad1.right_trigger > 0.2){
+            intakeMotor.setPower(-intakePower);
         } else{
             intakeMotor.setPower(0);
         }
 
         if(gamepad1.left_bumper){
             transferServo.setPower(transferPower);
+        } else if(gamepad1.left_trigger > 0.2){
+            transferServo.setPower(-transferPower);
         } else{
             transferServo.setPower(0);
         }
@@ -52,6 +57,19 @@ public class Intake {
 
     public Action intakeStack(){
         return new IntakeStack();
+    }
+
+    public class DepositPurple implements Action{
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            intakeMotor.setPower(-0.5);
+            return intakeMotor.getPower() != -0.5;
+        }
+    }
+
+    public Action depositPurple(){
+        return new DepositPurple();
     }
 }
 

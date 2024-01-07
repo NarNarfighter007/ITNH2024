@@ -26,10 +26,10 @@ public class Teleop extends OpMode{
         imu = new TeamIMU(hardwareMap);
         chassis = new Chassis(hardwareMap, imu, gamepad1);
         slides = new Slides(hardwareMap, gamepad1, gamepad2);
-        intake = new Intake(hardwareMap, gamepad1);
+        intake = new Intake(hardwareMap, gamepad1, gamepad2);
 //        vision = new Vision(hardwareMap);
         hang = new Hang(hardwareMap, gamepad1, gamepad2);
-//        airplane = new Airplane(hardwareMap, gamepad1, gamepad2);
+        airplane = new Airplane(hardwareMap, gamepad1, gamepad2);
     }
 
     @Override
@@ -41,7 +41,8 @@ public class Teleop extends OpMode{
         slides.runDispenser();
         hang.runHang();
         hang.runHook();
-//        airplane.runAirplane();
+        airplane.runAirplane();
         telemetry.addData("slidePos", slides.getSlideCurPos());
+        intake.telemetry(telemetry);
     }
 }

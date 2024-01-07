@@ -11,14 +11,19 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class Intake {
     DcMotor intakeMotor;
     CRServo transferServo;
-    Gamepad gamepad1;
-    ElapsedTime timer;
+    Gamepad gamepad1, gamepad2;
+    ElapsedTime timer = new ElapsedTime();
+    int intakePos = 0;
+    boolean intakingTwo = false, transferringTwo = false;
     final double intakePower = 0.8, transferPower = 1.0;
-    public Intake(HardwareMap hardwareMap, Gamepad gamepad1){
+    public Intake(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;
+        this.gamepad2 = gamepad2;
         intakeMotor = hardwareMap.get(DcMotor.class, "INM11");
         transferServo = hardwareMap.get(CRServo.class, "TNS10");
 
@@ -31,7 +36,7 @@ public class Intake {
             intakeMotor.setPower(intakePower);
         } else if(gamepad1.right_trigger > 0.2){
             intakeMotor.setPower(-intakePower);
-        } else{
+        } else if(!intakingTwo){
             intakeMotor.setPower(0);
         }
 
@@ -39,9 +44,35 @@ public class Intake {
             transferServo.setPower(transferPower);
         } else if(gamepad1.left_trigger > 0.2){
             transferServo.setPower(-transferPower);
-        } else{
+        } else if(!transferringTwo){
             transferServo.setPower(0);
         }
+
+        intakeTwo();
+//        if(gamepad2.a){
+//            timer.reset();
+//        }
+//        intakeTwo();
+
+    }
+    public void intakeTwo(){
+        if(gamepad2.a){
+            intakeMotor.setPower(intakePower);
+            intakePos = intakeMotor.getCurrentPosition();
+            intakingTwo = true;
+            transferServo.setPower(transferPower);
+            transferringTwo = true;
+        }
+        if(intakeMotor.getCurrentPosition()-intakePos > 850 && intakingTwo){
+            intakeMotor.setPower(0);
+            intakingTwo = false;
+            timer.reset();
+        }
+        if(transferringTwo && timer.milliseconds() > 500){
+            transferServo.setPower(0);
+            transferringTwo = false;
+        }
+        //800ms
     }
 
     public class IntakeStack implements Action{
@@ -70,6 +101,10 @@ public class Intake {
 
     public Action depositPurple(){
         return new DepositPurple();
+    }
+
+    public void telemetry(Telemetry telemetry){
+        telemetry.addData("intake position", intakeMotor.getCurrentPosition());
     }
 }
 

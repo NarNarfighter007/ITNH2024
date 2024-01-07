@@ -18,10 +18,10 @@ public class Slides {
     Servo dropServo, fourbarServo, boxServo;
     Gamepad gamepad1, gamepad2;
     int slideTargetPosition = 0;
-    final int down = 0, low = 1300, mid = 2530, high = 3800;
+    final int down = 0, low = 2000, mid = 2930, high = 4150;
     final double slidePower = 0.8;
 //    final double hold = 0.68, drop = 1.0, box = 0.4, intake = 0.90, outtake = 0.51; //outtake = 0.21
-    final double hold = 0.29, drop = 0.0, boxUp = .2, boxDown = 0.17, intake = .9, outtake = 0.52; //outtake = 0.21
+    final double hold = 0.29, drop = 0.0, boxUp = .214, boxDown = 0.17, intake = .9, outtake = 0.58; //outtake = 0.21
     final int slidesMin = 881;
     final int boxMin = 150;
     public Slides(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){

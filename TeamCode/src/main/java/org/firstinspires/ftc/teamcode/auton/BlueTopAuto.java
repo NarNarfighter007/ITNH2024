@@ -21,7 +21,7 @@ public class BlueTopAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 //        chassis = new Chassis(hardwareMap, imu, gamepad1);
-        intake = new Intake(hardwareMap, gamepad1);
+        intake = new Intake(hardwareMap, gamepad1, gamepad2);
         slides = new Slides(hardwareMap, gamepad1, gamepad2);
         Pose2d startPose = new Pose2d(36, 60, Math.toDegrees(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);

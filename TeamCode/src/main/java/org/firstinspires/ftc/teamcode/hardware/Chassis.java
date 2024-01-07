@@ -6,9 +6,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class Chassis {
     public DcMotor frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
-
     Gamepad gamepad1;
     LinearOpMode opMode;
     TeamIMU imu;
@@ -44,7 +45,7 @@ public class Chassis {
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
 
-        double botHeading = Math.toRadians(-imu.getHeadingFirstAngle());
+        double botHeading = Math.toRadians(-imu.getHeadingFirstAngle() + headingOffset);
 
         double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
         double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
@@ -57,10 +58,15 @@ public class Chassis {
 
 //        scaleFactor = driveSpeed + gamepad1.right_trigger * (1 - driveSpeed);
         scaleFactor = teleopDriveSpeed;
+
         frontLeftMotor.setPower(frontLeftPower * scaleFactor);
         backLeftMotor.setPower(backLeftPower * scaleFactor);
         frontRightMotor.setPower(frontRightPower * scaleFactor);
         backRightMotor.setPower(backRightPower * scaleFactor);
+
+        if(gamepad1.right_stick_button){
+            headingOffset = -imu.getHeadingFirstAngle(); //TODO: Check this (not 100% sure if this is right)
+        }
     }
 
     public void moveForward(){
@@ -136,5 +142,11 @@ public class Chassis {
         backLeftMotor.setPower(backLeftPower * scaleFactor);
         frontRightMotor.setPower(frontRightPower * scaleFactor);
         backRightMotor.setPower(backRightPower * scaleFactor);
+    }
+
+    public void getTelemetry(Telemetry telemetry){
+        telemetry.addData("odoLeft", backLeftMotor.getCurrentPosition());
+        telemetry.addData("odoRight", frontRightMotor.getCurrentPosition());
+        telemetry.addData("odoStrafe", backRightMotor.getCurrentPosition());
     }
 }

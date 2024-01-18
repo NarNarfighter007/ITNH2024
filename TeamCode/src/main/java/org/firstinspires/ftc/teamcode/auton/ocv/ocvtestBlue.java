@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auton;
+package org.firstinspires.ftc.teamcode.auton.ocv;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -13,18 +13,18 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config //Disable if not using FTC Dashboard https://github.com/PinkToTheFuture/OpenCV_FreightFrenzy_2021-2022#opencv_freightfrenzy_2021-2022
-@Autonomous(name="ocvtestRed", group="Tutorials")
+@Autonomous(name="ocvtestBlue", group="Tutorials")
 
-public class ocvtestRed extends LinearOpMode {
+public class ocvtestBlue extends LinearOpMode {
     private OpenCvCamera webcam;
 
     private static final int CAMERA_WIDTH  = 800; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 448; // height of wanted camera resolution
 
-    private double CrLowerUpdate = 150;
-    private double CbLowerUpdate = 0.0;
-    private double CrUpperUpdate = 255;
-    private double CbUpperUpdate = 128;
+    private double CrLowerUpdate = 0.0;
+    private double CbLowerUpdate = 140.0;
+    private double CrUpperUpdate = 190.0;
+    private double CbUpperUpdate = 255;
 
     public static double borderLeftX    = 0.0;   //fraction of pixels from the left side of the cam to skip
     public static double borderRightX   = 0.0;   //fraction of pixels from the right of the cam to skip
@@ -42,9 +42,9 @@ public class ocvtestRed extends LinearOpMode {
 //    public static Scalar scalarLowerYCrCb = new Scalar(0.0, 100.0, 0.0);
 //    public static Scalar scalarUpperYCrCb = new Scalar(255.0, 170.0, 120.0);
 
-    //Red
-    public static Scalar scalarLowerYCrCb = new Scalar(  0.0, 150.0, 0.0);
-    public static Scalar scalarUpperYCrCb = new Scalar(255.0,255.0 ,128.0 );
+    //Blue
+    public static Scalar scalarLowerYCrCb = new Scalar(0.0, 0.0, 140.0);
+    public static Scalar scalarUpperYCrCb = new Scalar(255.0,190.0 ,255.0 );
 
     @Override
     public void runOpMode()
@@ -53,8 +53,8 @@ public class ocvtestRed extends LinearOpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "camera"), cameraMonitorViewId);
         //OpenCV Pipeline
-        RedOCVPipeline myPipeline;
-        webcam.setPipeline(myPipeline = new RedOCVPipeline(borderLeftX,borderRightX,borderTopY,borderBottomY));
+        BlueOCVPipeline myPipeline;
+        webcam.setPipeline(myPipeline = new BlueOCVPipeline(borderLeftX,borderRightX,borderTopY,borderBottomY));
         // Configuration of Pipeline
         myPipeline.configureScalarLower(scalarLowerYCrCb.val[0],scalarLowerYCrCb.val[1],scalarLowerYCrCb.val[2]);
         myPipeline.configureScalarUpper(scalarUpperYCrCb.val[0],scalarUpperYCrCb.val[1],scalarUpperYCrCb.val[2]);
@@ -76,9 +76,9 @@ public class ocvtestRed extends LinearOpMode {
             }
         });
         // Only if you are using ftcdashboard
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
-        FtcDashboard.getInstance().startCameraStream(webcam, 10);
+       FtcDashboard dashboard = FtcDashboard.getInstance();
+       telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+       FtcDashboard.getInstance().startCameraStream(webcam, 10);
 
         telemetry.update();
         waitForStart();
@@ -90,9 +90,10 @@ public class ocvtestRed extends LinearOpMode {
                 telemetry.addData("Exception: ", myPipeline.debug);
             }
             // Only use this line of the code when you want to find the lower and upper values
-          //  testing(myPipeline);
+            testing(myPipeline);
 
             telemetry.addData("RectArea: ", myPipeline.getRectArea());
+            telemetry.addData("RectLocX: ", myPipeline.getRectMidpointX());
             telemetry.update();
 
             if(myPipeline.getRectArea() > 9000){
@@ -108,7 +109,7 @@ public class ocvtestRed extends LinearOpMode {
             }
         }
     }
-    public void testing(RedOCVPipeline myPipeline){
+    public void testing(BlueOCVPipeline myPipeline){
         if(lowerruntime + 0.05 < getRuntime()){
             CrLowerUpdate += -gamepad1.left_stick_y;
             CbLowerUpdate += gamepad1.left_stick_x;

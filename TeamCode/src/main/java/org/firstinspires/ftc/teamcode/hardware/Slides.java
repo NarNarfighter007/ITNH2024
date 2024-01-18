@@ -12,6 +12,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import java.util.Timer;
 
 public class Slides {
     DcMotorEx slideMotor;
@@ -21,9 +24,10 @@ public class Slides {
     final int down = 0, low = 2000, mid = 2930, high = 4150;
     final double slidePower = 0.8;
 //    final double hold = 0.68, drop = 1.0, box = 0.4, intake = 0.90, outtake = 0.51; //outtake = 0.21
-    final double hold = 0.29, drop = 0.0, boxUp = .214, boxDown = 0.17, intake = .9, outtake = 0.58; //outtake = 0.21
+    final double hold = 0.29, drop = 0.0, boxUp = .214, boxDown = 0.17, intake = .9, outtake = 0.53; //outtake = 0.21
     final int slidesMin = 881;
     final int boxMin = 150;
+    ElapsedTime timer = new ElapsedTime();
     public Slides(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
@@ -43,8 +47,8 @@ public class Slides {
     }
 
     public void runSlides(){
-//        slideTargetPosition += gamepad1.right_trigger * 5;
-//        slideTargetPosition -= gamepad1.left_trigger * 5;
+        slideTargetPosition += gamepad1.right_trigger * 50;
+        slideTargetPosition -= gamepad1.left_trigger * 50;
         slideMotor.setTargetPosition(slideTargetPosition);
         slideMotor.setPower(slidePower);
     }
@@ -83,6 +87,29 @@ public class Slides {
             fourbarServo.setPosition(intake);
             dropServo.setPosition(hold);
         }
+    }
+
+    public void outtakeYellow(){
+        slideMotor.setTargetPosition(low);
+        slideMotor.setPower(slidePower);
+        dropServo.setPosition(hold);
+        timer.reset();
+        if (slideMotor.getCurrentPosition() > slidesMin) {
+            fourbarServo.setPosition(outtake);
+            boxServo.setPosition(boxUp);
+        }
+        if (slideMotor.getCurrentPosition() >= low - 30) {
+            dropServo.setPosition(drop);
+            timer.reset();
+        }
+
+        if (timer.milliseconds() > 1000) {
+            dropServo.setPosition(hold);
+            slideMotor.setTargetPosition(down);
+            boxServo.setPosition(intake);
+            boxServo.setPosition(boxDown);
+        }
+        while(timer.milliseconds() < 7000){}
     }
 
     public int getSlideCurPos(){

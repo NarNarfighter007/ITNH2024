@@ -18,9 +18,10 @@ public class Intake {
     CRServo transferServo;
     Gamepad gamepad1, gamepad2;
     ElapsedTime timer = new ElapsedTime();
-    int intakePos = 0;
+    int intakePos = 0, intakePos2;
     boolean intakingTwo = false, transferringTwo = false;
     final double intakePower = 0.8, transferPower = 1.0;
+    final int outakePreloadTicks = 400;
     public Intake(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
@@ -30,21 +31,30 @@ public class Intake {
         transferServo.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
-
     public void runIntake(){
-        if(gamepad1.right_bumper) {
+//        if(gamepad1.right_bumper) {
+//            intakeMotor.setPower(intakePower);
+//        } else if(gamepad1.right_trigger > 0.2){
+//            intakeMotor.setPower(-intakePower);
+//        } else if(!intakingTwo){
+//            intakeMotor.setPower(0);
+//        }
+//
+//        if(gamepad1.left_bumper){
+//            transferServo.setPower(transferPower);
+//        } else if(gamepad1.left_trigger > 0.2){
+//            transferServo.setPower(-transferPower);
+//        } else if(!transferringTwo){
+//            transferServo.setPower(0);
+//        }
+        if(gamepad1.right_bumper){
             intakeMotor.setPower(intakePower);
-        } else if(gamepad1.right_trigger > 0.2){
+            transferServo.setPower(transferPower);
+        } else if(gamepad1.left_bumper){
             intakeMotor.setPower(-intakePower);
+            transferServo.setPower(-transferPower);
         } else if(!intakingTwo){
             intakeMotor.setPower(0);
-        }
-
-        if(gamepad1.left_bumper){
-            transferServo.setPower(transferPower);
-        } else if(gamepad1.left_trigger > 0.2){
-            transferServo.setPower(-transferPower);
-        } else if(!transferringTwo){
             transferServo.setPower(0);
         }
 
@@ -56,23 +66,36 @@ public class Intake {
 
     }
     public void intakeTwo(){
-        if(gamepad2.a){
+        if(gamepad2.a && !transferringTwo){
             intakeMotor.setPower(intakePower);
             intakePos = intakeMotor.getCurrentPosition();
             intakingTwo = true;
-            transferServo.setPower(transferPower);
+//            transferServo.setPower(transferPower);
             transferringTwo = true;
-        }
-        if(intakeMotor.getCurrentPosition()-intakePos > 850 && intakingTwo){
-            intakeMotor.setPower(0);
-            intakingTwo = false;
             timer.reset();
         }
-        if(transferringTwo && timer.milliseconds() > 500){
+        if(intakeMotor.getCurrentPosition()-intakePos > 380 && intakingTwo){
+            intakeMotor.setPower(-intakePower);
+            intakePos2 = intakeMotor.getCurrentPosition();
+            intakingTwo = false;
+        }
+        if(!intakingTwo && transferringTwo){
+            if(intakeMotor.getCurrentPosition() - intakePos2 < 25){
+                intakeMotor.setPower(0);
+            }
+        }
+        if(transferringTwo && timer.milliseconds() > 1600){
             transferServo.setPower(0);
             transferringTwo = false;
         }
-        //800ms
+    }
+
+    public void outtakePurple(){
+        int intakePos = intakeMotor.getCurrentPosition();
+        while(intakePos - intakeMotor.getCurrentPosition() < outakePreloadTicks){
+            intakeMotor.setPower(-.5);
+        }
+        intakeMotor.setPower(0);
     }
 
     public class IntakeStack implements Action{

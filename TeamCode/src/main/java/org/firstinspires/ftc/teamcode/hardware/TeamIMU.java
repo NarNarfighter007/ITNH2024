@@ -7,8 +7,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class TeamIMU {
     BNO055IMU imu;
     public double x, y, z;
+    HardwareMap hardwareMap;
 
     public TeamIMU(HardwareMap hardwareMap) {
+        this.hardwareMap = hardwareMap;
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;

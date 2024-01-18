@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auton;
+package org.firstinspires.ftc.teamcode.auton.ocv;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -7,23 +7,24 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+//import org.firstinspires.ftc.teamcode.utility.Globalvalues;
 import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @Config //Disable if not using FTC Dashboard https://github.com/PinkToTheFuture/OpenCV_FreightFrenzy_2021-2022#opencv_freightfrenzy_2021-2022
-@Autonomous(name="ocvtestBlue", group="Tutorials")
+@Autonomous(name="ocvtest2", group="Tutorials")
 
-public class ocvtestBlue extends LinearOpMode {
+public class ocvtest2 extends LinearOpMode {
     private OpenCvCamera webcam;
 
     private static final int CAMERA_WIDTH  = 800; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 448; // height of wanted camera resolution
 
-    private double CrLowerUpdate = 0.0;
-    private double CbLowerUpdate = 140.0;
-    private double CrUpperUpdate = 190.0;
+    private double CrLowerUpdate = 160;
+    private double CbLowerUpdate = 100;
+    private double CrUpperUpdate = 255;
     private double CbUpperUpdate = 255;
 
     public static double borderLeftX    = 0.0;   //fraction of pixels from the left side of the cam to skip
@@ -42,9 +43,9 @@ public class ocvtestBlue extends LinearOpMode {
 //    public static Scalar scalarLowerYCrCb = new Scalar(0.0, 100.0, 0.0);
 //    public static Scalar scalarUpperYCrCb = new Scalar(255.0, 170.0, 120.0);
 
-    //Blue
-    public static Scalar scalarLowerYCrCb = new Scalar(0.0, 0.0, 140.0);
-    public static Scalar scalarUpperYCrCb = new Scalar(255.0,190.0 ,255.0 );
+    //Green
+    public static Scalar scalarLowerYCrCb = new Scalar(  0.0, 0.0, 0.0);
+    public static Scalar scalarUpperYCrCb = new Scalar(255.0, 120.0, 120.0);
 
     @Override
     public void runOpMode()
@@ -76,9 +77,9 @@ public class ocvtestBlue extends LinearOpMode {
             }
         });
         // Only if you are using ftcdashboard
-       FtcDashboard dashboard = FtcDashboard.getInstance();
-       telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
-       FtcDashboard.getInstance().startCameraStream(webcam, 10);
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+        FtcDashboard.getInstance().startCameraStream(webcam, 10);
 
         telemetry.update();
         waitForStart();
@@ -93,11 +94,10 @@ public class ocvtestBlue extends LinearOpMode {
             testing(myPipeline);
 
             telemetry.addData("RectArea: ", myPipeline.getRectArea());
-            telemetry.addData("RectLocX: ", myPipeline.getRectMidpointX());
             telemetry.update();
 
-            if(myPipeline.getRectArea() > 9000){
-                if(myPipeline.getRectMidpointX() > 500){
+            if(myPipeline.getRectArea() > 2000){
+                if(myPipeline.getRectMidpointX() > 400){
                     AUTONOMOUS_C();
                 }
                 else if(myPipeline.getRectMidpointX() > 200){

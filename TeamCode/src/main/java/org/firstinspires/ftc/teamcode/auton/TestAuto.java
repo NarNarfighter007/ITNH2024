@@ -12,12 +12,13 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 public class TestAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d startPose = new Pose2d(12, 60, Math.toDegrees(90));
+        Pose2d startPose = new Pose2d(0, 0, Math.toDegrees(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         waitForStart();
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
-                        .splineTo(new Vector2d(24, 36), 0)
+                        .splineTo(new Vector2d(24, 0), 0)
+                        .turn(90)
                         .build()
         );
 

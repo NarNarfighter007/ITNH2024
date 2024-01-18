@@ -44,5 +44,6 @@ public class Teleop extends OpMode{
         airplane.runAirplane();
         telemetry.addData("slidePos", slides.getSlideCurPos());
         intake.telemetry(telemetry);
+//        telemetry.addData("imu", imu.getHeadingFirstAngle());
     }
 }

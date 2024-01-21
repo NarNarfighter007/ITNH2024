@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.hardware;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
+//import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -98,33 +98,33 @@ public class Intake {
         intakeMotor.setPower(0);
     }
 
-    public class IntakeStack implements Action{
-        public void init(){
-            timer.startTime();
-        }
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            transferServo.setPower(0.6);
-            return timer.time() > 3000;
-        }
-    }
-
-    public Action intakeStack(){
-        return new IntakeStack();
-    }
-
-    public class DepositPurple implements Action{
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            intakeMotor.setPower(-0.5);
-            return intakeMotor.getPower() != -0.5;
-        }
-    }
-
-    public Action depositPurple(){
-        return new DepositPurple();
-    }
+//    public class IntakeStack implements Action{
+//        public void init(){
+//            timer.startTime();
+//        }
+//        @Override
+//        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//            transferServo.setPower(0.6);
+//            return timer.time() > 3000;
+//        }
+//    }
+//
+//    public Action intakeStack(){
+//        return new IntakeStack();
+//    }
+//
+//    public class DepositPurple implements Action{
+//
+//        @Override
+//        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//            intakeMotor.setPower(-0.5);
+//            return intakeMotor.getPower() != -0.5;
+//        }
+//    }
+//
+//    public Action depositPurple(){
+//        return new DepositPurple();
+//    }
 
     public void telemetry(Telemetry telemetry){
         telemetry.addData("intake position", intakeMotor.getCurrentPosition());

@@ -5,8 +5,8 @@ import android.drm.DrmStore;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.SleepAction;
+//import com.acmerobotics.roadrunner.Action;
+//import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -89,6 +89,7 @@ public class Slides {
         }
     }
 
+    @Deprecated
     public void outtakeYellow(){
         slideMotor.setTargetPosition(low);
         slideMotor.setPower(slidePower);
@@ -112,6 +113,14 @@ public class Slides {
         while(timer.milliseconds() < 7000){}
     }
 
+    public void autonExtend(){
+
+    }
+
+    public void autonDispense(){
+
+    }
+
     public int getSlideCurPos(){
         return slideMotor.getCurrentPosition();
     }
@@ -120,52 +129,52 @@ public class Slides {
         return slideMotor.getTargetPosition();
     }
 
-    public class Dispense implements Action{
-        boolean dispensed = false;
-        public void init(){
-            slideMotor.setPower(slidePower);
-            boxServo.setPosition(boxDown);
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            slideMotor.setTargetPosition(low);
-            telemetryPacket.put("Slide pos", slideMotor.getCurrentPosition());
-
-            if(slideMotor.getCurrentPosition() == low){
-                fourbarServo.setPosition(outtake);
-                dropServo.setPosition(drop);
-                dispensed = true;
-            }
-            return !dispensed;
-        }
-    }
-
-    public class Retract implements Action{
-        boolean retracted = false;
-        public void init(){
-            fourbarServo.setPosition(intake);
-            dropServo.setPosition(hold);
-            boxServo.setPosition(boxUp);
-        }
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            slideMotor.setPower(slidePower);
-            slideMotor.setTargetPosition(down);
-            if(slideMotor.getCurrentPosition() < boxMin){
-                boxServo.setPosition(boxDown);
-            }
-            if(slideMotor.getCurrentPosition() < 10){
-                retracted = true;
-            }
-            return !retracted;
-        }
-    }
-    public Action dispense(){
-        return new Dispense();
-    }
-
-    public Action retract(){
-        return new Retract();
-    }
+//    public class Dispense implements Action{
+//        boolean dispensed = false;
+//        public void init(){
+//            slideMotor.setPower(slidePower);
+//            boxServo.setPosition(boxDown);
+//        }
+//
+//        @Override
+//        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//            slideMotor.setTargetPosition(low);
+//            telemetryPacket.put("Slide pos", slideMotor.getCurrentPosition());
+//
+//            if(slideMotor.getCurrentPosition() == low){
+//                fourbarServo.setPosition(outtake);
+//                dropServo.setPosition(drop);
+//                dispensed = true;
+//            }
+//            return !dispensed;
+//        }
+//    }
+//
+//    public class Retract implements Action{
+//        boolean retracted = false;
+//        public void init(){
+//            fourbarServo.setPosition(intake);
+//            dropServo.setPosition(hold);
+//            boxServo.setPosition(boxUp);
+//        }
+//        @Override
+//        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//            slideMotor.setPower(slidePower);
+//            slideMotor.setTargetPosition(down);
+//            if(slideMotor.getCurrentPosition() < boxMin){
+//                boxServo.setPosition(boxDown);
+//            }
+//            if(slideMotor.getCurrentPosition() < 10){
+//                retracted = true;
+//            }
+//            return !retracted;
+//        }
+//    }
+//    public Action dispense(){
+//        return new Dispense();
+//    }
+//
+//    public Action retract(){
+//        return new Retract();
+//    }
 }

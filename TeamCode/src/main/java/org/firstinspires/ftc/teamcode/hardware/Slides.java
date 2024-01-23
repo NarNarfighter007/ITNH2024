@@ -121,6 +121,9 @@ public class Slides {
 
     }
 
+    public void autonRetract(){
+
+    }
     public int getSlideCurPos(){
         return slideMotor.getCurrentPosition();
     }

@@ -10,16 +10,16 @@ public class ServoTest extends OpMode {
 
     @Override
     public void init() {
-        fourbarServo = hardwareMap.get(Servo.class, "FBS01"); //90deg = 0.21, straight(intake) = 0.78, out but not all the way = .5
-        dropServo = hardwareMap.get(Servo.class, "PDS02"); //hold = 0.7, drop = 1.0
-        boxServo = hardwareMap.get(Servo.class, "BRS00"); //1.0
+        fourbarServo = hardwareMap.get(Servo.class, "FBS01");
+        dropServo = hardwareMap.get(Servo.class, "PDS02");
+        boxServo = hardwareMap.get(Servo.class, "BRS00");
     }
 
     @Override
     public void loop() {
-//        fourbarServo.setPosition(gamepad1.left_stick_y); //.85
-        dropServo.setPosition(gamepad1.left_stick_y);
-//        boxServo.setPosition(gamepad1.right_stick_y); //.29
+        fourbarServo.setPosition(gamepad1.left_stick_y);
+        dropServo.setPosition(gamepad1.right_stick_x);
+        boxServo.setPosition(gamepad1.right_stick_y);
         telemetry.addData("fourbar", fourbarServo.getPosition());
         telemetry.addData("drop", dropServo.getPosition());
         telemetry.addData("box", boxServo.getPosition());

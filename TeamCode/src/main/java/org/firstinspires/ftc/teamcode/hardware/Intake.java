@@ -129,5 +129,9 @@ public class Intake {
     public void telemetry(Telemetry telemetry){
         telemetry.addData("intake position", intakeMotor.getCurrentPosition());
     }
+
+    public void depositPurple() {
+
+    }
 }
 

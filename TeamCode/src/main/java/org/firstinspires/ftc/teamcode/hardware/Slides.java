@@ -4,6 +4,7 @@ import android.drm.DrmStore;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 //import com.acmerobotics.roadrunner.Action;
 //import com.acmerobotics.roadrunner.SleepAction;
@@ -14,8 +15,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import java.util.Timer;
 
+@Config
 public class Slides {
     DcMotorEx slideMotor;
     Servo dropServo, fourbarServo, boxServo;
@@ -24,9 +28,9 @@ public class Slides {
     final int down = 0, low = 2000, mid = 2930, high = 4150;
     final double slidePower = 0.8;
 //    final double hold = 0.68, drop = 1.0, box = 0.4, intake = 0.90, outtake = 0.51; //outtake = 0.21
-    final double hold = 0.29, drop = 0.0, boxUp = .214, boxDown = 0.17, intake = .9, outtake = 0.53; //outtake = 0.21
+    public static double hold = .215, drop = .4, open = .36, boxUp = .29, boxDown = 0.15, intake = .69, outtake = 0.26; //box down = 0.16
     final int slidesMin = 881;
-    final int boxMin = 150;
+    final int boxMin = 400;
     ElapsedTime timer = new ElapsedTime();
     public Slides(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;
@@ -34,14 +38,14 @@ public class Slides {
 
         slideMotor =  hardwareMap.get(DcMotorEx.class, "SLM01");
         dropServo = hardwareMap.get(Servo.class, "PDS02");
-        fourbarServo = hardwareMap.get(Servo.class, "FBS01");
-        boxServo = hardwareMap.get(Servo.class, "BRS00");
+        fourbarServo = hardwareMap.get(Servo.class, "FBS00");
+        boxServo = hardwareMap.get(Servo.class, "BRS01");
 
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideMotor.setTargetPosition(down);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        dropServo.setPosition(hold);
+        dropServo.setPosition(open);
         fourbarServo.setPosition(intake);
         boxServo.setPosition(boxDown);
     }
@@ -85,7 +89,12 @@ public class Slides {
             fourbarServo.setPosition(outtake);
         } else if(getSlideTargetPos() <= slidesMin){
             fourbarServo.setPosition(intake);
+        }
+
+        if(getSlideTargetPos() > down){
             dropServo.setPosition(hold);
+        } else if(getSlideTargetPos() == down && getSlideCurPos() < slidesMin){
+            dropServo.setPosition(open);
         }
     }
 
@@ -132,6 +141,14 @@ public class Slides {
         return slideMotor.getTargetPosition();
     }
 
+    public void telemetry(Telemetry telemetry){
+        telemetry.addData("Slide pos", getSlideCurPos());
+        telemetry.addData("Slide target", getSlideTargetPos());
+        telemetry.addData("Below slide min", getSlideCurPos() < slidesMin);
+        telemetry.addData("fb", fourbarServo.getPosition());
+        telemetry.addData("box", boxServo.getPosition());
+        telemetry.addData("drop", dropServo.getPosition());
+    }
 //    public class Dispense implements Action{
 //        boolean dispensed = false;
 //        public void init(){

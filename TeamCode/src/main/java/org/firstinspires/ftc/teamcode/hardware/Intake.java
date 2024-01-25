@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -16,18 +17,28 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Intake {
     DcMotor intakeMotor;
     CRServo transferServo;
+    Servo stackIntakeFlip, stackIntakeL, stackIntakeR;
     Gamepad gamepad1, gamepad2;
     ElapsedTime timer = new ElapsedTime();
     int intakePos = 0, intakePos2;
-    boolean intakingTwo = false, transferringTwo = false;
+    double intakeFlipUp = .95, intakeFlipDown = .53;
+    double intakeLOut = 1, intakeLIn = 0, intakeROut = 0, intakeRIn = 1;
+    boolean intakingTwo = false, transferringTwo = false, intakingStack;
     final double intakePower = 0.8, transferPower = 1.0;
+    double time;
     final int outakePreloadTicks = 400;
     public Intake(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
         intakeMotor = hardwareMap.get(DcMotor.class, "INM11");
         transferServo = hardwareMap.get(CRServo.class, "TNS10");
+        stackIntakeFlip = hardwareMap.get(Servo.class, "FUS14");
+        stackIntakeL = hardwareMap.get(Servo.class, "ILS13");
+        stackIntakeR = hardwareMap.get(Servo.class, "IRS15");
 
+        stackIntakeFlip.setPosition(intakeFlipUp);
+        stackIntakeL.setPosition(intakeLIn);
+        stackIntakeR.setPosition(intakeRIn);
         transferServo.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
@@ -58,13 +69,26 @@ public class Intake {
             transferServo.setPower(0);
         }
 
-        intakeTwo();
-//        if(gamepad2.a){
-//            timer.reset();
-//        }
-//        intakeTwo();
-
+        time = timer.milliseconds();
     }
+
+    public void stackIntake(){
+        if(gamepad1.dpad_down){
+            stackIntakeFlip.setPosition(intakeFlipDown);
+        } else if(gamepad1.dpad_up){
+            stackIntakeFlip.setPosition(intakeFlipUp);
+        }
+
+        if(gamepad1.dpad_left){
+            intakingStack = true;
+            double startTime = time;
+        }
+
+        if(intakingStack){
+
+        }
+    }
+    @Deprecated
     public void intakeTwo(){
         if(gamepad2.a && !transferringTwo){
             intakeMotor.setPower(intakePower);

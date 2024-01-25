@@ -10,9 +10,9 @@ public class ServoTest extends OpMode {
 
     @Override
     public void init() {
-        fourbarServo = hardwareMap.get(Servo.class, "FBS01");
-        dropServo = hardwareMap.get(Servo.class, "PDS02");
-        boxServo = hardwareMap.get(Servo.class, "BRS00");
+        fourbarServo = hardwareMap.get(Servo.class, "FBS00"); //FBS00
+        dropServo = hardwareMap.get(Servo.class, "PDS02"); //
+        boxServo = hardwareMap.get(Servo.class, "BRS01");
     }
 
     @Override

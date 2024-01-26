@@ -455,7 +455,7 @@ public class Chassis {
 
     public void getTelemetry(Telemetry telemetry){
         telemetry.addData("odoLeft", backLeftMotor.getCurrentPosition());
-        telemetry.addData("odoRight", frontRightMotor.getCurrentPosition());
-        telemetry.addData("odoStrafe", backRightMotor.getCurrentPosition());
+        telemetry.addData("odoRight", backRightMotor.getCurrentPosition());
+        telemetry.addData("odoStrafe", frontRightMotor.getCurrentPosition()); //currently positive to the right
     }
 }

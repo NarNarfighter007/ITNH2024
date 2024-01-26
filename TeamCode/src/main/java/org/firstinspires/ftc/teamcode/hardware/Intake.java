@@ -23,7 +23,7 @@ public class Intake {
     int intakePos = 0, intakePos2;
     double intakeFlipUp = .95, intakeFlipDown = .53;
     double intakeLOut = 1, intakeLIn = 0, intakeROut = 0, intakeRIn = 1;
-    boolean intakingTwo = false, transferringTwo = false, intakingStack;
+    boolean intakingTwo = false, transferringTwo = false, intakingStack = false;
     final double intakePower = 0.8, transferPower = 1.0;
     double time;
     final int outakePreloadTicks = 400;
@@ -75,19 +75,26 @@ public class Intake {
     public void stackIntake(){
         if(gamepad1.dpad_down){
             stackIntakeFlip.setPosition(intakeFlipDown);
-        } else if(gamepad1.dpad_up){
+        } else if(gamepad1.dpad_up && stackIntakeL.getPosition() == intakeLOut && stackIntakeR.getPosition() == intakeROut && !intakingStack){
             stackIntakeFlip.setPosition(intakeFlipUp);
         }
 
         if(gamepad1.dpad_left){
             intakingStack = true;
-            double startTime = time;
         }
 
         if(intakingStack){
-
+            double startTime = time;
+            stackIntakeR.setPosition(intakeRIn);
+            stackIntakeL.setPosition(intakeLIn);
+            if(startTime >= .75){
+                stackIntakeR.setPosition(intakeROut);
+                stackIntakeL.setPosition(intakeLOut);
+                intakingStack = false;
+            }
         }
     }
+
     @Deprecated
     public void intakeTwo(){
         if(gamepad2.a && !transferringTwo){

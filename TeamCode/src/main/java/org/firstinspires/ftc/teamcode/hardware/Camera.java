@@ -15,7 +15,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @Config //Disable if not using FTC Dashboard https://github.com/PinkToTheFuture/OpenCV_FreightFrenzy_2021-2022#opencv_freightfrenzy_2021-2022
 public class Camera {
     private OpenCvCamera webcam;
-
+//alskdfjlaksjf
     private static final int CAMERA_WIDTH  = 800; // width  of wanted camera resolution
     private static final int CAMERA_HEIGHT = 448; // height of wanted camera resolution
 

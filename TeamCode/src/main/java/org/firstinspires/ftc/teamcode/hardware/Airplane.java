@@ -20,7 +20,7 @@ public class Airplane {
     public void runAirplane(){
         if(gamepad2.dpad_right){
             planeServo.setPosition(release);
-        } else{
+        } else {
             planeServo.setPosition(hold);
         }
     }

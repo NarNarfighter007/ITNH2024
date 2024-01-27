@@ -21,11 +21,11 @@ public class Intake {
     Gamepad gamepad1, gamepad2;
     ElapsedTime timer = new ElapsedTime();
     int intakePos = 0, intakePos2;
-    double intakeFlipUp = .95, intakeFlipDown = .53;
+    double intakeFlipUp = .56, intakeFlipDown = 0.01;
     double intakeLOut = 1, intakeLIn = 0, intakeROut = 0, intakeRIn = 1;
     boolean intakingTwo = false, transferringTwo = false, intakingStack = false;
     final double intakePower = 0.8, transferPower = 1.0;
-    double time;
+    double time, startTime;
     final int outakePreloadTicks = 400;
     public Intake(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;
@@ -37,8 +37,8 @@ public class Intake {
         stackIntakeR = hardwareMap.get(Servo.class, "IRS15");
 
         stackIntakeFlip.setPosition(intakeFlipUp);
-        stackIntakeL.setPosition(intakeLIn);
-        stackIntakeR.setPosition(intakeRIn);
+        stackIntakeL.setPosition(intakeLOut);
+        stackIntakeR.setPosition(intakeROut);
         transferServo.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
@@ -68,7 +68,7 @@ public class Intake {
             intakeMotor.setPower(0);
             transferServo.setPower(0);
         }
-
+        stackIntake();
         time = timer.milliseconds();
     }
 
@@ -81,13 +81,13 @@ public class Intake {
 
         if(gamepad1.dpad_left){
             intakingStack = true;
+            startTime = time;
         }
 
         if(intakingStack){
-            double startTime = time;
             stackIntakeR.setPosition(intakeRIn);
             stackIntakeL.setPosition(intakeLIn);
-            if(startTime >= .75){
+            if(time >= startTime + 200){
                 stackIntakeR.setPosition(intakeROut);
                 stackIntakeL.setPosition(intakeLOut);
                 intakingStack = false;
@@ -129,6 +129,10 @@ public class Intake {
         intakeMotor.setPower(0);
     }
 
+    public void flipdown(){
+
+    }
+
 //    public class IntakeStack implements Action{
 //        public void init(){
 //            timer.startTime();
@@ -159,6 +163,10 @@ public class Intake {
 
     public void telemetry(Telemetry telemetry){
         telemetry.addData("intake position", intakeMotor.getCurrentPosition());
+        telemetry.addData("flip pos", stackIntakeFlip.getPosition());
+        telemetry.addData("intake stack", intakingStack);
+        telemetry.addData("startTime", startTime);
+        telemetry.addData("time", time);
     }
 
     public void depositPurple() {

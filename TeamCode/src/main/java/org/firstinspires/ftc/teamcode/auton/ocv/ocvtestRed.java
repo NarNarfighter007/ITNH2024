@@ -59,12 +59,13 @@ public class ocvtestRed extends LinearOpMode {
         myPipeline.configureScalarLower(scalarLowerYCrCb.val[0],scalarLowerYCrCb.val[1],scalarLowerYCrCb.val[2]);
         myPipeline.configureScalarUpper(scalarUpperYCrCb.val[0],scalarUpperYCrCb.val[1],scalarUpperYCrCb.val[2]);
         // Webcam Streaming
+//        public void getStream(){
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
             public void onOpened()
             {
-                webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
             }
 
             @Override
@@ -93,6 +94,8 @@ public class ocvtestRed extends LinearOpMode {
           //  testing(myPipeline);
 
             telemetry.addData("RectArea: ", myPipeline.getRectArea());
+            telemetry.addData("RectY: ", myPipeline.getRectMidpointY());
+            telemetry.addData("RectLocX: ", myPipeline.getRectMidpointX());
             telemetry.update();
 
             if(myPipeline.getRectArea() > 9000){

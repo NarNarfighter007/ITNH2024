@@ -1,32 +1,40 @@
-//package org.firstinspires.ftc.teamcode.auton;
-//
-//import com.acmerobotics.roadrunner.Pose2d;
-//import com.acmerobotics.roadrunner.Vector2d;
-//import com.acmerobotics.roadrunner.ftc.Actions;
-//import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-//import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-//
-//import org.firstinspires.ftc.teamcode.MecanumDrive;
-//
-//@Autonomous
-//public class TestAuto extends LinearOpMode {
-//    @Override
-//    public void runOpMode() throws InterruptedException {
-//        Pose2d startPose = new Pose2d(0, 0, Math.toDegrees(0));
-//        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
-//        waitForStart();
-//        Actions.runBlocking(
-//                drive.actionBuilder(startPose)
-//                        .splineTo(new Vector2d(24, 0), 0)
-//                        .turn(90)
-//                        .build()
-//        );
-//
-//        while(opModeIsActive() && !isStopRequested()){
-//            telemetry.addData("heading", drive.pose.heading);
-//            telemetry.addData("x", drive.pose.position.x);
-//            telemetry.addData("y", drive.pose.position.y);
-//            telemetry.update();
-//        }
-//    }
-//}
+package org.firstinspires.ftc.teamcode.auton.rr1;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.auton.ocv.BlueOCVPipeline;
+import org.firstinspires.ftc.teamcode.hardware.Camera;
+import org.firstinspires.ftc.teamcode.hardware.Chassis;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.opencv.core.Scalar;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+
+
+
+@Autonomous
+public class TestAuto extends LinearOpMode {
+    Camera camera;
+    @Override
+    public void runOpMode() throws InterruptedException {
+//        camera = new Camera(hardwareMap);
+        camera = new Camera(hardwareMap, "RED");
+
+        while(opModeInInit()){
+            camera.getAutonRed();
+            camera.redTelemetry(telemetry);
+            telemetry.addData("RedReturn: ", camera.getAutonRed());
+            telemetry.update();
+        }
+        waitForStart();
+
+        camera.redTelemetry(telemetry);
+
+        telemetry.update();
+    }
+}

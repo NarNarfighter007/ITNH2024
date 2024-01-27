@@ -64,7 +64,7 @@ public class ocvtestBlue extends LinearOpMode {
             @Override
             public void onOpened()
             {
-                webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(CAMERA_WIDTH, CAMERA_HEIGHT, OpenCvCameraRotation.UPSIDE_DOWN);
             }
 
             @Override
@@ -94,6 +94,8 @@ public class ocvtestBlue extends LinearOpMode {
 
             telemetry.addData("RectArea: ", myPipeline.getRectArea());
             telemetry.addData("RectLocX: ", myPipeline.getRectMidpointX());
+            telemetry.addData("RectY: ", myPipeline.getRectMidpointY());
+
             telemetry.update();
 
             if(myPipeline.getRectArea() > 9000){

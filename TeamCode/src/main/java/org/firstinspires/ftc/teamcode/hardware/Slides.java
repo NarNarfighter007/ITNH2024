@@ -28,7 +28,7 @@ public class Slides {
     final int down = 0, low = 2000, mid = 2930, high = 4150;
     final double slidePower = 0.8;
 //    final double hold = 0.68, drop = 1.0, box = 0.4, intake = 0.90, outtake = 0.51; //outtake = 0.21
-    public static double hold = .215, drop = .05, open = .25, boxUp = .29, boxDown = 0.15, intake = .69, outtake = 0.26; //box down = 0.16
+    public static double hold = .215, drop = .05, open = .25, boxUp = .29, boxDown = 0.15, intake = .66, outtake = 0.26; //box down = 0.16
     final int slidesMin = 881;
     final int boxMin = 400;
     ElapsedTime timer = new ElapsedTime();
@@ -79,6 +79,12 @@ public class Slides {
             boxServo.setPosition(boxDown);
         }
 
+        if(gamepad1.dpad_left){
+            dropServo.setPosition(drop);
+        } else{
+            dropServo.setPosition(hold);
+        }
+
         if(getSlideCurPos() > slidesMin && getSlideTargetPos() > slidesMin){
             fourbarServo.setPosition(outtake);
         } else if(getSlideTargetPos() <= slidesMin){
@@ -89,10 +95,6 @@ public class Slides {
             dropServo.setPosition(hold);
         } else if(getSlideTargetPos() == down && getSlideCurPos() < slidesMin){
             dropServo.setPosition(open);
-        } else if(getSlideCurPos() > slidesMin && gamepad1.dpad_left){
-            dropServo.setPosition(drop);
-        } else{
-            dropServo.setPosition(hold);
         }
     }
 

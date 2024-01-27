@@ -17,7 +17,6 @@ public class Chassis {
     TeamIMU imu;
     double headingOffset = 0;
     double autonDriveSpeed = 0.3, teleopDriveSpeed = 0.8, scaleFactor = 1.0;
-
     final double driveSpeed = 0.6;
     public static double ticsPerInch = 1881;
     public static double ticsPerInch_r = 1730, backwardTicsPerInch_r = 1720, ticsPerInch_l = 1670, backwardTicsPerInch_l = 1700;
@@ -88,7 +87,7 @@ public class Chassis {
         double x = gamepad1.left_stick_x; //gamepad1.left_stick_x
         double rx = gamepad1.right_stick_x; //gamepad1.right_stick_x
 
-        double botHeading = Math.toRadians(-imu.getHeadingFirstAngle() + headingOffset);
+        double botHeading = Math.toRadians(-imu.getHeadingFirstAngle() - headingOffset);
 
         double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading); //1 90deg
         double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
@@ -413,6 +412,7 @@ public class Chassis {
         }
         stopDrive();
     }
+
     public void setRightPower(double power){
         frontRightMotor.setPower(power);
         backRightMotor.setPower(power);
@@ -454,6 +454,7 @@ public class Chassis {
     }
 
     public void getTelemetry(Telemetry telemetry){
+        telemetry.addData("heading", getHeading());
         telemetry.addData("odoLeft", backLeftMotor.getCurrentPosition());
         telemetry.addData("odoRight", backRightMotor.getCurrentPosition());
         telemetry.addData("odoStrafe", frontRightMotor.getCurrentPosition()); //currently positive to the right

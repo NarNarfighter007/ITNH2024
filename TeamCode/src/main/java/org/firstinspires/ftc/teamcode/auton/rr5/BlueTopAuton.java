@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.hardware.Slides;
 @Config
 @Autonomous
 public class BlueTopAuton extends LinearOpMode {
-    public static int x1a = 12, y1a = 36, t1a = 135, x2 = 48, y2a = 40;
+    public static int x1a = 24, y1a = 36, t1a = 90, x2 = 48, y2a = 40;
     public static int x1b = 12, y1b = 36, t1b = -90, y2b = 36;
     public static int x1c = 12, y1c = 36, t1c = 225, y2c = 32;
     int pos = 1;
@@ -26,42 +26,44 @@ public class BlueTopAuton extends LinearOpMode {
         intake = new Intake(hardwareMap, gamepad1, gamepad2);
         slides = new Slides(hardwareMap, gamepad1, gamepad2);
 
-        Pose2d startPose = new Pose2d(32, 60, Math.toDegrees(90));
+        Pose2d startPose = new Pose2d(12, 60, Math.toDegrees(90));
         drive.setPoseEstimate(startPose);
         Trajectory case1 = drive.trajectoryBuilder(startPose)
-                .splineTo(new Vector2d(x1a, y1a), Math.toRadians(t1a))
+//                .lineToLinearHeading(new Pose2d(x1a, y1a, Math.toRadians(t1a)))
+                .splineToLinearHeading(new Pose2d(x1a, y1a, Math.toRadians(t1a)), 0)
                 .addDisplacementMarker(() -> {
-                    intake.depositPurple();
-                    slides.autonExtend();
+//                    intake.depositPurple();
+//                    slides.autonExtend();
                 })
                 .splineTo(new Vector2d(x2, y2a), Math.toRadians(0))
                 .addDisplacementMarker(() -> {
-                    slides.autonDispense();
-                    slides.autonRetract();
+//                    slides.autonDispense();
+//                    slides.autonRetract();
                 })
                 .build();
         Trajectory case2 = drive.trajectoryBuilder(startPose)
+//                .lineTo(new Vector2d(x1b, y1b))
                 .splineTo(new Vector2d(x1b, y1b), Math.toRadians(t1b))
                 .addDisplacementMarker(() -> {
-                    intake.depositPurple();
-                    slides.autonExtend();
+//                    intake.depositPurple();
+//                    slides.autonExtend();
                 })
                 .splineTo(new Vector2d(x2, y2b), Math.toRadians(0))
                 .addDisplacementMarker(() -> {
-                    slides.autonDispense();
-                    slides.autonRetract();
+//                    slides.autonDispense();
+//                    slides.autonRetract();
                 })
                 .build();
         Trajectory case3 = drive.trajectoryBuilder(startPose)
                 .splineTo(new Vector2d(x1c, y1c), Math.toRadians(t1c))
                 .addDisplacementMarker(() -> {
-                    intake.depositPurple();
-                    slides.autonExtend();
+//                    intake.depositPurple();
+//                    slides.autonExtend();
                 })
                 .splineTo(new Vector2d(x2, y2c), Math.toRadians(0))
                 .addDisplacementMarker(() -> {
-                    slides.autonDispense();
-                    slides.autonRetract();
+//                    slides.autonDispense();
+//                    slides.autonRetract();
                 })
                 .build();
 

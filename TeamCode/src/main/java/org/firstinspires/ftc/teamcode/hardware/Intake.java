@@ -21,12 +21,13 @@ public class Intake {
     Gamepad gamepad1, gamepad2;
     ElapsedTime timer = new ElapsedTime();
     int intakePos = 0, intakePos2;
-    double intakeFlipUp = .56, intakeFlipDown = 0.01;
+    double intakeFlipUp = .56, intakeFlipDown = 0.05;
     double intakeLOut = 1, intakeLIn = 0, intakeROut = 0, intakeRIn = 1;
     boolean intakingTwo = false, transferringTwo = false, intakingStack = false;
     final double intakePower = 0.8, transferPower = 1.0;
     double time, startTime;
     final int outakePreloadTicks = 400;
+    boolean toggle = false, flipDown = false;
     public Intake(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
@@ -73,13 +74,20 @@ public class Intake {
     }
 
     public void stackIntake(){
-        if(gamepad1.dpad_down){
+        if(gamepad1.dpad_down && !toggle){
+            flipDown = !flipDown;
+            toggle = true;
+        } else if(!gamepad1.dpad_down && toggle){
+            toggle = false;
+        }
+
+        if(flipDown){
             stackIntakeFlip.setPosition(intakeFlipDown);
-        } else if(gamepad1.dpad_up && stackIntakeL.getPosition() == intakeLOut && stackIntakeR.getPosition() == intakeROut && !intakingStack){
+        } else if(!flipDown && stackIntakeL.getPosition() == intakeLOut && stackIntakeR.getPosition() == intakeROut && !intakingStack){
             stackIntakeFlip.setPosition(intakeFlipUp);
         }
 
-        if(gamepad1.dpad_left){
+        if(gamepad1.dpad_right){
             intakingStack = true;
             startTime = time;
         }
@@ -93,6 +101,7 @@ public class Intake {
                 intakingStack = false;
             }
         }
+
     }
 
     @Deprecated
@@ -167,6 +176,7 @@ public class Intake {
         telemetry.addData("intake stack", intakingStack);
         telemetry.addData("startTime", startTime);
         telemetry.addData("time", time);
+        telemetry.addData("flipDown", flipDown);
     }
 
     public void depositPurple() {

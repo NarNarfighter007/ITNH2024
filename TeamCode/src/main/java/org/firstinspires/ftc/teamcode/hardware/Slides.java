@@ -25,13 +25,17 @@ public class Slides {
     Servo dropServo, fourbarServo, boxServo;
     Gamepad gamepad1, gamepad2;
     int slideTargetPosition = 0;
-    final int down = 0, low = 2000, mid = 2930, high = 4150;
+    final int down = 0, low = 1730, mid = 1980, high = 2300;
     final double slidePower = 0.8;
 //    final double hold = 0.68, drop = 1.0, box = 0.4, intake = 0.90, outtake = 0.51; //outtake = 0.21
-    public static double hold = .215, drop = .05, open = .25, boxUp = .29, boxDown = 0.15, intake = .66, outtake = 0.26; //box down = 0.16
+    public static double hold = 0.2, drop = 0.3, open = 0.3, boxUp = .31, boxDown = 0.15, intake = .66, outtake = 0.26; //box down = 0.16
+    public static double extendDelay = 0;
     final int slidesMin = 881;
     final int boxMin = 400;
     ElapsedTime timer = new ElapsedTime();
+    ElapsedTime timer2 = new ElapsedTime();
+    boolean toggle = false, holdIn = false;
+    double time, startTime;
     public Slides(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;
@@ -53,22 +57,40 @@ public class Slides {
     public void runSlides(){
         slideTargetPosition += gamepad1.right_trigger * 50;
         slideTargetPosition -= gamepad1.left_trigger * 50;
-        slideMotor.setTargetPosition(slideTargetPosition);
+        if(time > startTime + extendDelay) {
+            slideMotor.setTargetPosition(slideTargetPosition);
+        }
         slideMotor.setPower(slidePower);
     }
 
     public void runSlidesPresets(){
+        time = timer2.milliseconds();
         slideMotor.setPower(0.8);
         if (gamepad1.a) {
+            if(getSlideCurPos() < down + 50) {
+                startTime = time;
+            }
+            holdIn = false;
             slideTargetPosition = down;
         } else if(gamepad1.x){
+            if(getSlideCurPos() < down + 50) {
+                startTime = time;
+            }
             slideTargetPosition = low;
         } else if(gamepad1.b) {
+            if(getSlideCurPos() < down + 50) {
+                startTime = time;
+            }
             slideTargetPosition = mid;
         } else if(gamepad1.y) {
+            if(getSlideCurPos() < down + 50) {
+                startTime = time;
+            }
             slideTargetPosition = high;
         }
-        slideMotor.setTargetPosition(slideTargetPosition);
+        if(time > startTime + extendDelay) {
+            slideMotor.setTargetPosition(slideTargetPosition);
+        }
         slideMotor.setPower(slidePower);
     }
 
@@ -79,10 +101,11 @@ public class Slides {
             boxServo.setPosition(boxDown);
         }
 
-        if(gamepad1.dpad_left){
-            dropServo.setPosition(drop);
-        } else{
-            dropServo.setPosition(hold);
+        if(gamepad1.dpad_up && !toggle){
+            holdIn = !holdIn;
+            toggle = true;
+        } else if(!gamepad1.dpad_up && toggle){
+            toggle = false;
         }
 
         if(getSlideCurPos() > slidesMin && getSlideTargetPos() > slidesMin){
@@ -91,9 +114,13 @@ public class Slides {
             fourbarServo.setPosition(intake);
         }
 
-        if(getSlideTargetPos() > down){
+        if(gamepad1.dpad_left &&  getSlideCurPos() > slidesMin){
+            dropServo.setPosition(drop);
+        } else if(slideTargetPosition > down || getSlideCurPos() > slidesMin){
             dropServo.setPosition(hold);
-        } else if(getSlideTargetPos() == down && getSlideCurPos() < slidesMin){
+        } else if(holdIn && slideTargetPosition == down && getSlideCurPos() < slidesMin){
+            dropServo.setPosition(hold);
+        } else if(slideTargetPosition == down && getSlideCurPos() < slidesMin){
             dropServo.setPosition(open);
         }
     }

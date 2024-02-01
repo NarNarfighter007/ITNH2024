@@ -22,13 +22,14 @@ import java.util.Timer;
 @Config
 public class Slides {
     DcMotorEx slideMotor;
-    Servo dropServo, fourbarServo, boxServo;
+    Servo dropServo, fourbarServo, boxServo, boxRotServo;
     Gamepad gamepad1, gamepad2;
     int slideTargetPosition = 0;
     final int down = 0, low = 1730, mid = 1980, high = 2300;
     final double slidePower = 0.8;
 //    final double hold = 0.68, drop = 1.0, box = 0.4, intake = 0.90, outtake = 0.51; //outtake = 0.21
-    public static double hold = 0.2, drop = 0.3, open = 0.3, boxUp = .31, boxDown = 0.15, intake = .66, outtake = 0.26; //box down = 0.16
+    public static double hold = 0.2, drop = 0.3, open = 0.3, boxUp = .31, boxDown = 0.15, boxRotIntake = 0, boxRotOuttake = .5,
+        intake = .66, outtake = 0.26; //box down = 0.16
     public static double extendDelay = 0;
     final int slidesMin = 881;
     final int boxMin = 400;
@@ -125,11 +126,10 @@ public class Slides {
         }
     }
 
-    @Deprecated
     public void outtakeYellow(){
+        dropServo.setPosition(hold);
         slideMotor.setTargetPosition(low);
         slideMotor.setPower(slidePower);
-        dropServo.setPosition(hold);
         timer.reset();
         if (slideMotor.getCurrentPosition() > slidesMin) {
             fourbarServo.setPosition(outtake);
@@ -139,18 +139,18 @@ public class Slides {
             dropServo.setPosition(drop);
             timer.reset();
         }
-
         if (timer.milliseconds() > 1000) {
             dropServo.setPosition(hold);
             slideMotor.setTargetPosition(down);
-            boxServo.setPosition(intake);
+            fourbarServo.setPosition(intake);
             boxServo.setPosition(boxDown);
         }
-        while(timer.milliseconds() < 7000){}
+        while(slideMotor.getCurrentPosition() > down + 20){}
     }
 
     public void autonExtend(){
-
+        slideMotor.setTargetPosition(low);
+        slideMotor.setPower(slidePower);
     }
 
     public void autonDispense(){

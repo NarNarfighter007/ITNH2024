@@ -104,6 +104,23 @@ public class Intake {
 
     }
 
+    public void flipDown(){
+        stackIntakeFlip.setPosition(intakeFlipDown);
+    }
+
+    public void flipUp(){
+        stackIntakeFlip.setPosition(intakeFlipDown);
+    }
+    public void intakeOne(){
+        if(stackIntakeFlip.getPosition() == intakeFlipDown){
+            stackIntakeR.setPosition(intakeRIn);
+            stackIntakeL.setPosition(intakeLIn);
+            timer.reset();
+            while(timer.milliseconds() < 200){}
+            stackIntakeR.setPosition(intakeROut);
+            stackIntakeL.setPosition(intakeLOut);
+        }
+    }
     @Deprecated
     public void intakeTwo(){
         if(gamepad2.a && !transferringTwo){
@@ -133,13 +150,9 @@ public class Intake {
     public void outtakePurple(){
         int intakePos = intakeMotor.getCurrentPosition();
         while(intakePos - intakeMotor.getCurrentPosition() < outakePreloadTicks){
-            intakeMotor.setPower(-.5);
+            intakeMotor.setPower(-.2);
         }
         intakeMotor.setPower(0);
-    }
-
-    public void flipdown(){
-
     }
 
 //    public class IntakeStack implements Action{

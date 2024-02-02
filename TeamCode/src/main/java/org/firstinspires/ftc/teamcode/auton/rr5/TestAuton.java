@@ -15,10 +15,10 @@ public class TestAuton extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d startPose = new Pose2d(0, 0, Math.toDegrees(0));
+        Pose2d startPose = new Pose2d(12, 60, Math.toDegrees(-90));
         drive.setPoseEstimate(startPose);
         Trajectory traj = drive.trajectoryBuilder(startPose)
-                .lineTo(new Vector2d(12, 0))
+                .splineTo(new Vector2d(24, 36), Math.toRadians(-90))
                 .build();
 
         waitForStart();

@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.hardware.Intake;
 import org.firstinspires.ftc.teamcode.hardware.Slides;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 @Config
 @Autonomous
@@ -28,7 +29,8 @@ public class BlueTopAuton extends LinearOpMode {
 
         Pose2d startPose = new Pose2d(12, 60, Math.toDegrees(90));
         drive.setPoseEstimate(startPose);
-        Trajectory case1 = drive.trajectoryBuilder(startPose, true)
+        TrajectorySequence case1 = drive.trajectorySequenceBuilder(startPose)
+                .setReversed(true)
                 .splineTo(new Vector2d(x1a, y1a), Math.toRadians(t1a))
                 .addDisplacementMarker(() -> {
 //                    intake.depositPurple();
@@ -68,7 +70,7 @@ public class BlueTopAuton extends LinearOpMode {
         waitForStart();
         switch(pos){
             case 1:
-                drive.followTrajectory(case1);
+                drive.followTrajectorySequence(case1);
                 break;
             case 2:
                 drive.followTrajectory(case2);
@@ -77,7 +79,7 @@ public class BlueTopAuton extends LinearOpMode {
                 drive.followTrajectory(case3);
                 break;
             default:
-                drive.followTrajectory(case1);
+                drive.followTrajectorySequence(case1);
                 break;
         }
     }

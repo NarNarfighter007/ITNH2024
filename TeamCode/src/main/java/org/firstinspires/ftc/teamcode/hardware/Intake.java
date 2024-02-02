@@ -155,34 +155,6 @@ public class Intake {
         intakeMotor.setPower(0);
     }
 
-//    public class IntakeStack implements Action{
-//        public void init(){
-//            timer.startTime();
-//        }
-//        @Override
-//        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//            transferServo.setPower(0.6);
-//            return timer.time() > 3000;
-//        }
-//    }
-//
-//    public Action intakeStack(){
-//        return new IntakeStack();
-//    }
-//
-//    public class DepositPurple implements Action{
-//
-//        @Override
-//        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//            intakeMotor.setPower(-0.5);
-//            return intakeMotor.getPower() != -0.5;
-//        }
-//    }
-//
-//    public Action depositPurple(){
-//        return new DepositPurple();
-//    }
-
     public void telemetry(Telemetry telemetry){
         telemetry.addData("intake position", intakeMotor.getCurrentPosition());
         telemetry.addData("flip pos", stackIntakeFlip.getPosition());

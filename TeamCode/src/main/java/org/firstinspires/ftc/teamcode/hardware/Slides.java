@@ -27,15 +27,13 @@ public class Slides {
     int slideTargetPosition = 0;
     final int down = 0, low = 1730, mid = 1980, high = 2300;
     final double slidePower = 0.8;
-//    final double hold = 0.68, drop = 1.0, box = 0.4, intake = 0.90, outtake = 0.51; //outtake = 0.21
-    public static double hold = 0.2, drop = 0.3, open = 0.3, boxUp = .31, boxDown = 0.15, boxRotIntake = 0, boxRotOuttake = .5,
-        intake = .66, outtake = 0.26; //box down = 0.16
+    public static double hold = 0.7, drop = .6, boxUp = .6, boxDown = .67, boxRotIntake = 0.74, boxRotOuttake = .16,
+        intake = 1, outtake = 0;
     public static double extendDelay = 0;
     final int slidesMin = 881;
     final int boxMin = 400;
     ElapsedTime timer = new ElapsedTime();
     ElapsedTime timer2 = new ElapsedTime();
-    boolean toggle = false, holdIn = false;
     double time, startTime;
     public Slides(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;
@@ -45,14 +43,16 @@ public class Slides {
         dropServo = hardwareMap.get(Servo.class, "PDS02");
         fourbarServo = hardwareMap.get(Servo.class, "FBS00");
         boxServo = hardwareMap.get(Servo.class, "BRS01");
+        boxRotServo = hardwareMap.get(Servo.class, "TWS03");
 
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideMotor.setTargetPosition(down);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        dropServo.setPosition(open);
+        dropServo.setPosition(intake);
         fourbarServo.setPosition(intake);
         boxServo.setPosition(boxDown);
+        boxRotServo.setPosition(boxRotIntake);
     }
 
     public void runSlides(){
@@ -71,7 +71,6 @@ public class Slides {
             if(getSlideCurPos() < down + 50) {
                 startTime = time;
             }
-            holdIn = false;
             slideTargetPosition = down;
         } else if(gamepad1.x){
             if(getSlideCurPos() < down + 50) {
@@ -102,27 +101,18 @@ public class Slides {
             boxServo.setPosition(boxDown);
         }
 
-        if(gamepad1.dpad_up && !toggle){
-            holdIn = !holdIn;
-            toggle = true;
-        } else if(!gamepad1.dpad_up && toggle){
-            toggle = false;
-        }
-
         if(getSlideCurPos() > slidesMin && getSlideTargetPos() > slidesMin){
             fourbarServo.setPosition(outtake);
+            boxRotServo.setPosition(boxRotOuttake);
         } else if(getSlideTargetPos() <= slidesMin){
             fourbarServo.setPosition(intake);
+            boxRotServo.setPosition(boxRotIntake);
         }
 
         if(gamepad1.dpad_left &&  getSlideCurPos() > slidesMin){
             dropServo.setPosition(drop);
-        } else if(slideTargetPosition > down || getSlideCurPos() > slidesMin){
+        } else {
             dropServo.setPosition(hold);
-        } else if(holdIn && slideTargetPosition == down && getSlideCurPos() < slidesMin){
-            dropServo.setPosition(hold);
-        } else if(slideTargetPosition == down && getSlideCurPos() < slidesMin){
-            dropServo.setPosition(open);
         }
     }
 
@@ -175,53 +165,6 @@ public class Slides {
         telemetry.addData("fb", fourbarServo.getPosition());
         telemetry.addData("box", boxServo.getPosition());
         telemetry.addData("drop", dropServo.getPosition());
+        telemetry.addData("box rot", boxRotServo.getPosition());
     }
-//    public class Dispense implements Action{
-//        boolean dispensed = false;
-//        public void init(){
-//            slideMotor.setPower(slidePower);
-//            boxServo.setPosition(boxDown);
-//        }
-//
-//        @Override
-//        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//            slideMotor.setTargetPosition(low);
-//            telemetryPacket.put("Slide pos", slideMotor.getCurrentPosition());
-//
-//            if(slideMotor.getCurrentPosition() == low){
-//                fourbarServo.setPosition(outtake);
-//                dropServo.setPosition(drop);
-//                dispensed = true;
-//            }
-//            return !dispensed;
-//        }
-//    }
-//
-//    public class Retract implements Action{
-//        boolean retracted = false;
-//        public void init(){
-//            fourbarServo.setPosition(intake);
-//            dropServo.setPosition(hold);
-//            boxServo.setPosition(boxUp);
-//        }
-//        @Override
-//        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-//            slideMotor.setPower(slidePower);
-//            slideMotor.setTargetPosition(down);
-//            if(slideMotor.getCurrentPosition() < boxMin){
-//                boxServo.setPosition(boxDown);
-//            }
-//            if(slideMotor.getCurrentPosition() < 10){
-//                retracted = true;
-//            }
-//            return !retracted;
-//        }
-//    }
-//    public Action dispense(){
-//        return new Dispense();
-//    }
-//
-//    public Action retract(){
-//        return new Retract();
-//    }
 }

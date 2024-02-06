@@ -27,11 +27,10 @@ public class Slides {
     int slideTargetPosition = 0;
     final int down = 0, low = 1730, mid = 1980, high = 2300;
     final double slidePower = 0.8;
-    public static double hold = 0.7, drop = .6, boxUp = .6, boxDown = .67, boxRotIntake = 0.74, boxRotOuttake = .16,
-        intake = 1, outtake = 0;
+    public static double hold = 0.18, drop = 0, boxUp = 0.47, boxDown = 0.334, boxRotIntake = 0.57, boxRotOuttake = 0,
+        intake = 0.97, outtake = 0;
     public static double extendDelay = 0;
-    final int slidesMin = 881;
-    final int boxMin = 400;
+    final int slidesMin = 1500, boxMin = 400, slideBoxRotMin = 950;
     ElapsedTime timer = new ElapsedTime();
     ElapsedTime timer2 = new ElapsedTime();
     double time, startTime;
@@ -49,7 +48,7 @@ public class Slides {
         slideMotor.setTargetPosition(down);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        dropServo.setPosition(intake);
+        dropServo.setPosition(hold);
         fourbarServo.setPosition(intake);
         boxServo.setPosition(boxDown);
         boxRotServo.setPosition(boxRotIntake);
@@ -97,15 +96,19 @@ public class Slides {
     public void runDispenser(){
         if(slideMotor.getCurrentPosition() > boxMin) {
             boxServo.setPosition(boxUp);
-        } else if(slideMotor.getCurrentPosition() <= boxMin){
+        } else if(slideMotor.getCurrentPosition() <= slidesMin){
             boxServo.setPosition(boxDown);
         }
 
         if(getSlideCurPos() > slidesMin && getSlideTargetPos() > slidesMin){
             fourbarServo.setPosition(outtake);
-            boxRotServo.setPosition(boxRotOuttake);
-        } else if(getSlideTargetPos() <= slidesMin){
+        } else if(getSlideCurPos() <= boxMin){
             fourbarServo.setPosition(intake);
+        }
+
+        if(getSlideCurPos() > slideBoxRotMin && getSlideTargetPos() > slideBoxRotMin){
+            boxRotServo.setPosition(boxRotOuttake);
+        } else if(getSlideTargetPos() <= slideBoxRotMin){
             boxRotServo.setPosition(boxRotIntake);
         }
 

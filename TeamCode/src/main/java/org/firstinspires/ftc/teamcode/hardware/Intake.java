@@ -147,11 +147,11 @@ public class Intake {
         }
     }
 
-    public void outtakePurple(){
-        int intakePos = intakeMotor.getCurrentPosition();
-        while(intakePos - intakeMotor.getCurrentPosition() < outakePreloadTicks){
-            intakeMotor.setPower(-.2);
-        }
+    public void startReverseIntake(){
+        intakeMotor.setPower(-0.2);
+    }
+
+    public void stopReverseIntake(){
         intakeMotor.setPower(0);
     }
 
@@ -164,8 +164,5 @@ public class Intake {
         telemetry.addData("flipDown", flipDown);
     }
 
-    public void depositPurple() {
-
-    }
 }
 

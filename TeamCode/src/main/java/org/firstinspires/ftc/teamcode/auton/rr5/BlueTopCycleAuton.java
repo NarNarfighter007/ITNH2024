@@ -33,7 +33,7 @@ public class BlueTopCycleAuton extends LinearOpMode {
         Trajectory case1 = drive.trajectoryBuilder(startPose, true)
                 .splineToLinearHeading(new Pose2d(x1a, y1a, Math.toRadians(t1a)), 0)
                 .addDisplacementMarker(() -> {
-                    intake.depositPurple();
+                    intake.startReverseIntake();
                     slides.autonExtend();
                 })
                 .splineTo(new Vector2d(x2, y2a), Math.toRadians(0))
@@ -45,7 +45,7 @@ public class BlueTopCycleAuton extends LinearOpMode {
         Trajectory case2 = drive.trajectoryBuilder(startPose, true)
                 .splineTo(new Vector2d(x1b, y1b), Math.toRadians(t1b))
                 .addDisplacementMarker(() -> {
-                    intake.depositPurple();
+                    intake.startReverseIntake();
                     slides.autonExtend();
                 })
                 .splineTo(new Vector2d(x2, y2b), Math.toRadians(0))
@@ -57,7 +57,7 @@ public class BlueTopCycleAuton extends LinearOpMode {
         Trajectory case3 = drive.trajectoryBuilder(startPose, true)
                 .splineTo(new Vector2d(x1c, y1c), Math.toRadians(t1c))
                 .addDisplacementMarker(() -> {
-                    intake.depositPurple();
+                    intake.startReverseIntake();
                     slides.autonExtend();
                 })
                 .splineTo(new Vector2d(x2, y2c), Math.toRadians(0))

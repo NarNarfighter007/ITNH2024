@@ -27,12 +27,17 @@ public class Slides {
     int slideTargetPosition = 0;
     final int down = 0, low = 1730, mid = 1980, high = 2300;
     final double slidePower = 0.8;
-    public static double hold = 0.18, drop = 0, boxUp = 0.47, boxDown = 0.334, boxRotIntake = 0.57, boxRotOuttake = 0,
-        intake = 0.97, outtake = 0;
+//    public static double hold = 0.18, drop = 0, boxUp = 0.47, boxDown = 0.334, boxRotIntake = 0.57, boxRotOuttake = 0,
+//        intake = 0.97, outtake = 0;
+
+    public static double hold = 0.1, drop = 0.25, open = 0.25, boxUp = .565, boxMid = .5, boxDown = 0.385, boxRotIntake = 0, boxRotOuttake = .5,
+            intake = 0.64, outtake = 0.27; //box down = 0.16
     public static double extendDelay = 0;
-    final int slidesMin = 1500, boxMin = 400, slideBoxRotMin = 950;
+    final int slidesMin = 1500;
+    final int boxMin = 400;
     ElapsedTime timer = new ElapsedTime();
     ElapsedTime timer2 = new ElapsedTime();
+    boolean toggle = false, holdIn = false;
     double time, startTime;
     public Slides(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;
@@ -42,7 +47,7 @@ public class Slides {
         dropServo = hardwareMap.get(Servo.class, "PDS02");
         fourbarServo = hardwareMap.get(Servo.class, "FBS00");
         boxServo = hardwareMap.get(Servo.class, "BRS01");
-        boxRotServo = hardwareMap.get(Servo.class, "TWS03");
+//        boxRotServo = hardwareMap.get(Servo.class, "TWS03");
 
         slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideMotor.setTargetPosition(down);
@@ -51,7 +56,7 @@ public class Slides {
         dropServo.setPosition(hold);
         fourbarServo.setPosition(intake);
         boxServo.setPosition(boxDown);
-        boxRotServo.setPosition(boxRotIntake);
+//        boxRotServo.setPosition(boxRotIntake);
     }
 
     public void runSlides(){
@@ -94,28 +99,32 @@ public class Slides {
     }
 
     public void runDispenser(){
-        if(slideMotor.getCurrentPosition() > boxMin) {
+        if(slideMotor.getCurrentPosition() > boxMin && slideMotor.getTargetPosition() > slidesMin) {
             boxServo.setPosition(boxUp);
-        } else if(slideMotor.getCurrentPosition() <= slidesMin){
+        } else if(slideMotor.getCurrentPosition() <= boxMin){
             boxServo.setPosition(boxDown);
+        } else if(slideMotor.getTargetPosition() < boxMin){
+            boxServo.setPosition(boxMid);
         }
-
+        if(gamepad1.dpad_up && !toggle){
+            holdIn = !holdIn;
+            toggle = true;
+        } else if(!gamepad1.dpad_up && toggle){
+            toggle = false;
+        }
         if(getSlideCurPos() > slidesMin && getSlideTargetPos() > slidesMin){
             fourbarServo.setPosition(outtake);
-        } else if(getSlideCurPos() <= boxMin){
+        } else if(getSlideTargetPos() <= slidesMin){
             fourbarServo.setPosition(intake);
         }
-
-        if(getSlideCurPos() > slideBoxRotMin && getSlideTargetPos() > slideBoxRotMin){
-            boxRotServo.setPosition(boxRotOuttake);
-        } else if(getSlideTargetPos() <= slideBoxRotMin){
-            boxRotServo.setPosition(boxRotIntake);
-        }
-
         if(gamepad1.dpad_left &&  getSlideCurPos() > slidesMin){
             dropServo.setPosition(drop);
-        } else {
+        } else if(slideTargetPosition > down || getSlideCurPos() > slidesMin){
             dropServo.setPosition(hold);
+        } else if(holdIn && slideTargetPosition == down && getSlideCurPos() < slidesMin){
+            dropServo.setPosition(hold);
+        } else if(slideTargetPosition == down && getSlideCurPos() < slidesMin){
+            dropServo.setPosition(open);
         }
     }
 
@@ -168,6 +177,6 @@ public class Slides {
         telemetry.addData("fb", fourbarServo.getPosition());
         telemetry.addData("box", boxServo.getPosition());
         telemetry.addData("drop", dropServo.getPosition());
-        telemetry.addData("box rot", boxRotServo.getPosition());
+//        telemetry.addData("box rot", boxRotServo.getPosition());
     }
 }

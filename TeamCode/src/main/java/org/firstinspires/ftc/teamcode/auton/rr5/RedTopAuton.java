@@ -17,11 +17,11 @@ import java.util.Vector;
 
 @Config
 @Autonomous
-public class BlueTopAuton extends LinearOpMode {
-//    public static int x1a = 24, y1a = 36, t1a = -90, x2 = 48, y2a = 40; //maybe sort of proper vals
-        public static int x1a = 30, y1a = 40, t1a = -90, x2 = 66, y2a = 52; //compensated vals
-    public static int x1b = 20, y1b = 30, t1b = -90, y2b = 46;
-    public static int x1c = 4, y1c = 33, t1c = -90, y2c = 38;
+public class RedTopAuton extends LinearOpMode {
+    //    public static int x1a = 24, y1a = 36, t1a = -90, x2 = 48, y2a = 40; //maybe sort of proper vals
+    public static int x1a = 30, y1a = -40, t1a = -90, x2 = 66, y2a = -52; //compensated vals
+    public static int x1b = 20, y1b = -30, t1b = -90, y2b = -46;
+    public static int x1c = 4, y1c = -33, t1c = -90, y2c = -38;
     int pos = 1;
     Intake intake;
     Slides slides;
@@ -30,10 +30,10 @@ public class BlueTopAuton extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         intake = new Intake(hardwareMap, gamepad1, gamepad2);
-        camera = new Camera(hardwareMap, "BLUE");
-        slides = new Slides(hardwareMap, gamepad1, gamepad2);
+        camera = new Camera(hardwareMap, "RED");
+//        slides = new Slides(hardwareMap, gamepad1, gamepad2);
 
-        Pose2d startPose = new Pose2d(12, 60, Math.toDegrees(-90));
+        Pose2d startPose = new Pose2d(12, 60, Math.toDegrees(90));
         drive.setPoseEstimate(startPose);
         TrajectorySequence case1 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
@@ -69,10 +69,10 @@ public class BlueTopAuton extends LinearOpMode {
                 .build();
         TrajectorySequence case3 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
-                .lineTo(new Vector2d(x1c+16, y1c+5))
-                .turn(Math.toRadians(-50))
+                .lineTo(new Vector2d(x1c+16, y1c-5))
+                .turn(Math.toRadians(50))
                 .lineTo(new Vector2d(x1c, y1c))
-                .lineToLinearHeading(new Pose2d(x2+6, y2c, Math.toRadians(0)))
+                .lineToLinearHeading(new Pose2d(x2-6, y2c, Math.toRadians(0)))
                 .addDisplacementMarker(() -> {
 //                    slides.autonDispense();
 //                    slides.autonRetract();
@@ -80,10 +80,10 @@ public class BlueTopAuton extends LinearOpMode {
                 .build();
 
         while(opModeInInit()){
-            camera.getAutonBlue();
+            camera.getAutonRed();
             telemetry.addData("Pos: ", pos);
             telemetry.update();
-            if(camera.getAutonBlue() != 0){
+            if(camera.getAutonRed() != 0){
                 pos = camera.getAutonBlue();
             }
         }

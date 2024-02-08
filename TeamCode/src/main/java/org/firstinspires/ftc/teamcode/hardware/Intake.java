@@ -21,7 +21,7 @@ public class Intake {
     Gamepad gamepad1, gamepad2;
     ElapsedTime timer = new ElapsedTime();
     int intakePos = 0, intakePos2;
-    double intakeFlipUp = .56, intakeFlipDown = 0.05;
+    double intakeFlipUp = .68, intakeFlipDown = 0.05;
     double intakeLOut = 1, intakeLIn = 0, intakeROut = 0, intakeRIn = 1;
     boolean intakingTwo = false, transferringTwo = false, intakingStack = false;
     final double intakePower = 0.8, transferPower = 1.0;

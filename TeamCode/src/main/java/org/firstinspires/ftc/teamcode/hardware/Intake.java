@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 //import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,11 +10,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+        import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 
 public class Intake {
     DcMotor intakeMotor;
     CRServo transferServo;
-    Servo stackIntakeFlip, stackIntakeL, stackIntakeR;
+    Servo intakeFlipServo, stackIntakeL, stackIntakeR;
     Gamepad gamepad1, gamepad2;
     ElapsedTime timer = new ElapsedTime();
     int intakePos = 0, intakePos2;
@@ -33,11 +31,11 @@ public class Intake {
         this.gamepad2 = gamepad2;
         intakeMotor = hardwareMap.get(DcMotor.class, "INM11");
         transferServo = hardwareMap.get(CRServo.class, "TNS10");
-        stackIntakeFlip = hardwareMap.get(Servo.class, "FUS14");
+        intakeFlipServo = hardwareMap.get(Servo.class, "FUS14");
         stackIntakeL = hardwareMap.get(Servo.class, "ILS13");
         stackIntakeR = hardwareMap.get(Servo.class, "IRS15");
 
-        stackIntakeFlip.setPosition(intakeFlipUp);
+        intakeFlipServo.setPosition(intakeFlipUp);
         stackIntakeL.setPosition(intakeLOut);
         stackIntakeR.setPosition(intakeROut);
         transferServo.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -82,9 +80,9 @@ public class Intake {
         }
 
         if(flipDown){
-            stackIntakeFlip.setPosition(intakeFlipDown);
+            intakeFlipServo.setPosition(intakeFlipDown);
         } else if(!flipDown && stackIntakeL.getPosition() == intakeLOut && stackIntakeR.getPosition() == intakeROut && !intakingStack){
-            stackIntakeFlip.setPosition(intakeFlipUp);
+            intakeFlipServo.setPosition(intakeFlipUp);
         }
 
         if(gamepad1.dpad_right){
@@ -105,14 +103,14 @@ public class Intake {
     }
 
     public void flipDown(){
-        stackIntakeFlip.setPosition(intakeFlipDown);
+        intakeFlipServo.setPosition(intakeFlipDown);
     }
 
     public void flipUp(){
-        stackIntakeFlip.setPosition(intakeFlipDown);
+        intakeFlipServo.setPosition(intakeFlipDown);
     }
     public void intakeOne(){
-        if(stackIntakeFlip.getPosition() == intakeFlipDown){
+        if(intakeFlipServo.getPosition() == intakeFlipDown){
             stackIntakeR.setPosition(intakeRIn);
             stackIntakeL.setPosition(intakeLIn);
             timer.reset();
@@ -147,6 +145,24 @@ public class Intake {
         }
     }
 
+    public void autonIntakeFlipDown(){
+        intakeFlipServo.setPosition(intakeFlipDown);
+    }
+
+    public void autonIntakeFlipUp(){
+        intakeFlipServo.setPosition(intakeFlipUp);
+    }
+
+    public void autonIntakeIn(){
+        stackIntakeL.setPosition(intakeLIn);
+        stackIntakeR.setPosition(intakeRIn);
+    }
+
+    public void autonIntakeOut(){
+        stackIntakeL.setPosition(intakeLOut);
+        stackIntakeR.setPosition(intakeROut);
+    }
+
     public void startReverseIntake(){
         intakeMotor.setPower(-0.2);
     }
@@ -157,7 +173,7 @@ public class Intake {
 
     public void telemetry(Telemetry telemetry){
         telemetry.addData("intake position", intakeMotor.getCurrentPosition());
-        telemetry.addData("flip pos", stackIntakeFlip.getPosition());
+        telemetry.addData("flip pos", intakeFlipServo.getPosition());
         telemetry.addData("intake stack", intakingStack);
         telemetry.addData("startTime", startTime);
         telemetry.addData("time", time);

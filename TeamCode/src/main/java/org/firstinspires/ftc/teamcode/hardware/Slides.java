@@ -128,6 +128,7 @@ public class Slides {
         }
     }
 
+    @Deprecated
     public void outtakeYellow(){
         dropServo.setPosition(hold);
         slideMotor.setTargetPosition(low);
@@ -156,11 +157,11 @@ public class Slides {
     }
 
     public void autonDispense(){
-
     }
 
     public void autonRetract(){
-
+        slideMotor.setTargetPosition(down);
+        slideMotor.setPower(slidePower);
     }
     public int getSlideCurPos(){
         return slideMotor.getCurrentPosition();

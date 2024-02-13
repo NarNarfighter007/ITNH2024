@@ -19,9 +19,9 @@ import java.util.Vector;
 @Autonomous
 public class RedTopAuton extends LinearOpMode {
     //    public static int x1a = 24, y1a = 36, t1a = -90, x2 = 48, y2a = 40; //maybe sort of proper vals
-    public static int x1a = 30, y1a = -40, t1a = -90, x2 = 66, y2a = -52; //compensated vals
+    public static int x1a = 30, y1a = -33, t1a = -90, x2 = 66, y2a = -52; //compensated vals
     public static int x1b = 20, y1b = -30, t1b = -90, y2b = -46;
-    public static int x1c = 4, y1c = -33, t1c = -90, y2c = -38;
+    public static int x1c = 10, y1c = -34, t1c = -90, y2c = -38;
     int pos = 1;
     Intake intake;
     Slides slides;
@@ -33,7 +33,7 @@ public class RedTopAuton extends LinearOpMode {
         camera = new Camera(hardwareMap, "RED");
 //        slides = new Slides(hardwareMap, gamepad1, gamepad2);
 
-        Pose2d startPose = new Pose2d(12, 60, Math.toDegrees(90));
+        Pose2d startPose = new Pose2d(12, -60, Math.toDegrees(90));
         drive.setPoseEstimate(startPose);
         TrajectorySequence case1 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
@@ -69,7 +69,7 @@ public class RedTopAuton extends LinearOpMode {
                 .build();
         TrajectorySequence case3 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
-                .lineTo(new Vector2d(x1c+16, y1c-5))
+                .lineTo(new Vector2d(x1c+16, y1c-4))
                 .turn(Math.toRadians(50))
                 .lineTo(new Vector2d(x1c, y1c))
                 .lineToLinearHeading(new Pose2d(x2-6, y2c, Math.toRadians(0)))
@@ -84,18 +84,18 @@ public class RedTopAuton extends LinearOpMode {
             telemetry.addData("Pos: ", pos);
             telemetry.update();
             if(camera.getAutonRed() != 0){
-                pos = camera.getAutonBlue();
+                pos = camera.getAutonRed();
             }
         }
         waitForStart();
         switch(pos){
-            case 1:
+            case 3:
                 drive.followTrajectorySequence(case1);
                 break;
             case 2:
                 drive.followTrajectorySequence(case2);
                 break;
-            case 3:
+            case 1:
                 drive.followTrajectorySequence(case3);
                 break;
             default:

@@ -8,99 +8,179 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.hardware.Camera;
 import org.firstinspires.ftc.teamcode.hardware.Intake;
 import org.firstinspires.ftc.teamcode.hardware.Slides;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
+
+import java.util.Vector;
 
 @Config
 @Autonomous
 public class BlueTopCycleAuton extends LinearOpMode {
-    public static int x1a = 24, y1a = 36, t1a = 90, x2 = 48, y2a = 40;
-    public static int x1b = 12, y1b = 36, t1b = 90, y2b = 36;
-    public static int x1c = 12, y1c = 36, t1c = 225, y2c = 32;
-    public static int x3 = 0, y3 = 12, x4 = -64, y4, x5 = 24, y5 = 12, x6 = 50, y6 = 48;
+    //    public static int x1a = 24, y1a = 36, t1a = -90, x2 = 48, y2a = 40; //maybe sort of proper vals
+    public static int x1a = 30, y1a = 40, t1a = -90, x2 = 66, y2a = 52; //compensated vals
+    public static int x1b = 20, y1b = 30, t1b = -90, y2b = 46;
+    public static int x1c = 4, y1c = 33, t1c = -90, y2c = 38;
     int pos = 1;
     Intake intake;
     Slides slides;
+    Camera camera;
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         intake = new Intake(hardwareMap, gamepad1, gamepad2);
+        camera = new Camera(hardwareMap, "BLUE");
         slides = new Slides(hardwareMap, gamepad1, gamepad2);
 
-        Pose2d startPose = new Pose2d(12, 60, Math.toDegrees(90));
+        Pose2d startPose = new Pose2d(12, 60, Math.toDegrees(-90));
         drive.setPoseEstimate(startPose);
-        Trajectory case1 = drive.trajectoryBuilder(startPose, true)
-                .splineToLinearHeading(new Pose2d(x1a, y1a, Math.toRadians(t1a)), 0)
-                .addDisplacementMarker(() -> {
-                    intake.startReverseIntake();
-                    slides.autonExtend();
-                })
-                .splineTo(new Vector2d(x2, y2a), Math.toRadians(0))
-                .addDisplacementMarker(() -> {
-                    slides.autonDispense();
-                    slides.autonRetract();
-                })
-                .build();
-        Trajectory case2 = drive.trajectoryBuilder(startPose, true)
-                .splineTo(new Vector2d(x1b, y1b), Math.toRadians(t1b))
-                .addDisplacementMarker(() -> {
-                    intake.startReverseIntake();
-                    slides.autonExtend();
-                })
-                .splineTo(new Vector2d(x2, y2b), Math.toRadians(0))
-                .addDisplacementMarker(() -> {
-                    slides.autonDispense();
-                    slides.autonRetract();
-                })
-                .build();
-        Trajectory case3 = drive.trajectoryBuilder(startPose, true)
-                .splineTo(new Vector2d(x1c, y1c), Math.toRadians(t1c))
-                .addDisplacementMarker(() -> {
-                    intake.startReverseIntake();
-                    slides.autonExtend();
-                })
-                .splineTo(new Vector2d(x2, y2c), Math.toRadians(0))
-                .addDisplacementMarker(() -> {
-                    slides.autonDispense();
-                    slides.autonRetract();
-                })
-                .build();
-        TrajectorySequence cycle = drive.trajectorySequenceBuilder(case1.end())
+        TrajectorySequence case1 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
-                .splineTo(new Vector2d(x3, y3), Math.toRadians(0))
                 .addDisplacementMarker(() -> {
-                    intake.flipDown();
+                    intake.autonIntakeFlipDown();
                 })
-                .splineTo(new Vector2d(x4, y3), Math.toRadians(0))
+                .waitSeconds(0.5)
+                .addDisplacementMarker(()->{
+                    intake.autonIntakeIn();
+                })
+                .waitSeconds(.25)
+                .addDisplacementMarker(()->{
+                    intake.autonIntakeOut();
+                })
+                .waitSeconds(.25)
+                .addDisplacementMarker(()->{
+                    intake.autonIntakeIn();
+                })
+                .waitSeconds(.25)
+                .addDisplacementMarker(()->{
+                    intake.autonIntakeOut();
+                })
+                .lineTo(new Vector2d(x1a, y1a))
+//                .splineTo(new Vector2d(x1a, y1a), Math.toRadians(t1a))
                 .addDisplacementMarker(() -> {
-                    intake.intakeOne();
+//                    intake.startReverseIntake();
+//                    slides.autonExtend();
+                })
+                .waitSeconds(1)
+                .lineToLinearHeading(new Pose2d(x2, y2a, Math.toRadians(0)))
+//                .splineTo(new Vector2d(x2, y2a), Math.toRadians(0))
+                .addDisplacementMarker(() -> {
+//                    slides.autonDispense();
+//                    slides.autonRetract();
+                })
+                .build();
+        TrajectorySequence case2 = drive.trajectorySequenceBuilder(startPose)
+                .setReversed(true)
+                .lineTo(new Vector2d(x1b, y1b))
+                .addDisplacementMarker(() -> {
+                    intake.startReverseIntake();
+                })
+                .waitSeconds(1)
+                .addDisplacementMarker(() -> {
+                    intake.stopReverseIntake();
+                })
+                .lineToLinearHeading(new Pose2d(x2, y2b, Math.toRadians(0)))
+                .addDisplacementMarker(() -> {
+//                    slides.autonDispense();
+//                    slides.autonRetract();
+                })
+                .build();
+        TrajectorySequence case3 = drive.trajectorySequenceBuilder(startPose)
+                .setReversed(true)
+                .lineTo(new Vector2d(x1c+16, y1c+5))
+                .turn(Math.toRadians(-50))
+                .lineTo(new Vector2d(x1c, y1c))
+                .lineToLinearHeading(new Pose2d(x2+6, y2c, Math.toRadians(0)))
+                .addDisplacementMarker(() -> {
+//                    slides.autonDispense();
+//                    slides.autonRetract();
+                })
+                .build();
+
+        TrajectorySequence transition1 = drive.trajectorySequenceBuilder(case1.end())
+                .splineTo(new Vector2d(0, 12), Math.toRadians(0))
+                .addDisplacementMarker(() -> {
+                    intake.autonIntakeFlipDown();
+                    intake.autonIntakeOut();
+                })
+                .build();
+        TrajectorySequence transition2 = drive.trajectorySequenceBuilder(case2.end())
+                .splineTo(new Vector2d(0, 12), Math.toRadians(0))
+                .addDisplacementMarker(() -> {
+                    intake.autonIntakeFlipDown();
+                    intake.autonIntakeOut();
+                })
+                .build();
+        TrajectorySequence transition3 = drive.trajectorySequenceBuilder(case3.end())
+                .splineTo(new Vector2d(0, 12), Math.toRadians(0))
+                .addDisplacementMarker(() -> {
+                    intake.autonIntakeFlipDown();
+                    intake.autonIntakeOut();
+                })
+                .build();
+
+        TrajectorySequence cycle = drive.trajectorySequenceBuilder(transition1.end())
+                .splineTo(new Vector2d(-66, 12), Math.toRadians(0))
+                .addDisplacementMarker(() -> {
+                    intake.autonIntakeIn();
+                })
+                .waitSeconds(0.25)
+                .addDisplacementMarker(() -> {
+                    intake.autonIntakeOut();
+                })
+                .waitSeconds(0.25)
+                .addDisplacementMarker(() -> {
+                    intake.autonIntakeIn();
+                })
+                .waitSeconds(0.25)
+                .addDisplacementMarker(() -> {
+                    intake.autonIntakeOut();
                     intake.flipUp();
                 })
-                .splineTo(new Vector2d(x5, y5), Math.toRadians(0))
+                .splineTo(new Vector2d(12, 12), Math.toRadians(0))
                 .addDisplacementMarker(() -> {
                     slides.autonExtend();
                 })
-                .splineTo(new Vector2d(x6, y6), Math.toRadians(0))
-                .addDisplacementMarker(()-> {
+                .lineToLinearHeading(new Pose2d(x2+6, y2c, Math.toRadians(0)))
+                .addDisplacementMarker(() -> {
                     slides.autonDispense();
+                })
+                .waitSeconds(0.5)
+                .addDisplacementMarker(() -> {
                     slides.autonRetract();
                 })
                 .build();
+
+        while(opModeInInit()){
+            camera.getAutonBlue();
+            telemetry.addData("Pos: ", pos);
+            telemetry.update();
+            if(camera.getAutonBlue() != 0){
+                pos = camera.getAutonBlue();
+            }
+        }
         waitForStart();
         switch(pos){
             case 1:
-                drive.followTrajectory(case1);
+                drive.followTrajectorySequence(case1);
                 break;
             case 2:
-                drive.followTrajectory(case2);
+                drive.followTrajectorySequence(case2);
                 break;
             case 3:
-                drive.followTrajectory(case3);
+                drive.followTrajectorySequence(case3);
                 break;
             default:
-                drive.followTrajectory(case1);
+                drive.followTrajectorySequence(case1);
                 break;
+        }
+        while(!isStopRequested() && opModeIsActive()){
+            telemetry.addData("x", drive.getPoseEstimate().getX());
+            telemetry.addData("y", drive.getPoseEstimate().getY());
+            telemetry.addData("heading", drive.getPoseEstimate().getHeading());
+            telemetry.update();
         }
     }
 }

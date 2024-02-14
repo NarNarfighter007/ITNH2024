@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
 public class ServoTest extends OpMode {
-    Servo fourbarServo, leftDropServo, rightDropServo, boxServo, boxRotServo, emergencyOutake;
+    Servo fourbarServo, leftDropServo, rightDropServo, pitchServo, rollServo, emergencyOutake;
     CRServo transferServo;
 
     DcMotor intakeMotor;
@@ -19,8 +19,8 @@ public class ServoTest extends OpMode {
         fourbarServo = hardwareMap.get(Servo.class, "FBS00"); //FBS00 //72
         leftDropServo = hardwareMap.get(Servo.class, "DLS02");
         rightDropServo = hardwareMap.get(Servo.class, "DRS04");
-        boxServo = hardwareMap.get(Servo.class, "BXS01"); //22
-        boxRotServo = hardwareMap.get(Servo.class, "BRS05");
+        pitchServo = hardwareMap.get(Servo.class, "OPS01"); //22
+        rollServo = hardwareMap.get(Servo.class, "ORS05");
         emergencyOutake = hardwareMap.get(Servo.class, "EMS03");
 
         transferServo = hardwareMap.get(CRServo.class, "TNS10");
@@ -54,10 +54,9 @@ public class ServoTest extends OpMode {
 
         telemetry.addData("fourbar", fourbarServo.getPosition());
         telemetry.addData("Leftdrop", leftDropServo.getPosition());
-        telemetry.addData("box", boxServo.getPosition());
+        telemetry.addData("outtake pitch", pitchServo.getPosition());
         telemetry.addData("rightDrop", rightDropServo.getPosition());
-        telemetry.addData("box", boxServo.getPosition());
-        telemetry.addData("boxRot", boxRotServo.getPosition());
+        telemetry.addData("outtake roll", rollServo.getPosition());
 //        telemetry.addData("box rot", boxRotServo.getPosition());
 //        telemetry.addData("intake", intake.getPosition());
 

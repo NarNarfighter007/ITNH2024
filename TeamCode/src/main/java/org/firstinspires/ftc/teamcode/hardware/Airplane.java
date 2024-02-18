@@ -9,7 +9,7 @@ public class Airplane {
     Servo planeServo;
     Gamepad gamepad1, gamepad2;
 
-    final double hold = 0, release = 0.6;
+    final double hold = 0.178, release = 0.4;
     public Airplane(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
         this.gamepad1 = gamepad1;
         this.gamepad2 = gamepad2;

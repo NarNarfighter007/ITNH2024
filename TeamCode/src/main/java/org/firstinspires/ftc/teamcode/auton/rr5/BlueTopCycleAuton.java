@@ -38,38 +38,15 @@ public class BlueTopCycleAuton extends LinearOpMode {
         drive.setPoseEstimate(startPose);
         TrajectorySequence case1 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
-                .addDisplacementMarker(() -> {
-                    intake.autonIntakeFlipDown();
-                })
-                .waitSeconds(0.5)
-                .addDisplacementMarker(()->{
-                    intake.autonIntakeIn();
-                })
-                .waitSeconds(.25)
-                .addDisplacementMarker(()->{
-                    intake.autonIntakeOut();
-                })
-                .waitSeconds(.25)
-                .addDisplacementMarker(()->{
-                    intake.autonIntakeIn();
-                })
-                .waitSeconds(.25)
-                .addDisplacementMarker(()->{
-                    intake.autonIntakeOut();
-                })
                 .lineTo(new Vector2d(x1a, y1a))
 //                .splineTo(new Vector2d(x1a, y1a), Math.toRadians(t1a))
                 .addDisplacementMarker(() -> {
-//                    intake.startReverseIntake();
+                    intake.startReverseIntake();
 //                    slides.autonExtend();
                 })
                 .waitSeconds(1)
                 .lineToLinearHeading(new Pose2d(x2, y2a, Math.toRadians(0)))
 //                .splineTo(new Vector2d(x2, y2a), Math.toRadians(0))
-                .addDisplacementMarker(() -> {
-//                    slides.autonDispense();
-//                    slides.autonRetract();
-                })
                 .build();
         TrajectorySequence case2 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)

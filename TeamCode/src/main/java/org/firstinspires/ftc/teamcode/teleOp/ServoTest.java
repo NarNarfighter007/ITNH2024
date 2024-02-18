@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class ServoTest extends OpMode {
     Servo fourbarServo, leftDropServo, rightDropServo, pitchServo, rollServo, emergencyOutake;
     CRServo transferServo;
-
     DcMotor intakeMotor;
 
     @Override
@@ -19,8 +18,8 @@ public class ServoTest extends OpMode {
         fourbarServo = hardwareMap.get(Servo.class, "FBS00"); //FBS00 //72
         leftDropServo = hardwareMap.get(Servo.class, "DLS02");
         rightDropServo = hardwareMap.get(Servo.class, "DRS04");
-        pitchServo = hardwareMap.get(Servo.class, "OPS01"); //22
-        rollServo = hardwareMap.get(Servo.class, "ORS05");
+        pitchServo = hardwareMap.get(Servo.class, "BXS01"); //22
+        rollServo = hardwareMap.get(Servo.class, "BRS05");
         emergencyOutake = hardwareMap.get(Servo.class, "EMS03");
 
         transferServo = hardwareMap.get(CRServo.class, "TNS10");
@@ -32,12 +31,12 @@ public class ServoTest extends OpMode {
     @Override
     public void loop() {
 //        fourbarServo.setPosition(gamepad1.left_stick_y);
-//        leftDropServo.setPosition(gamepad1.right_stick_x);
+        leftDropServo.setPosition(gamepad1.left_stick_x);
 //        boxServo.setPosition(gamepad1.right_stick_y);
 //
 //        boxRotServo.setPosition(gamepad2.left_stick_y);
 //        emergencyOutake.setPosition(gamepad2.right_stick_y);
-//        rightDropServo.setPosition(gamepad2.right_stick_x);
+        rightDropServo.setPosition(gamepad1.right_stick_x);
         if(gamepad1.right_bumper){
             intakeMotor.setPower(0.8);
             transferServo.setPower(1);
@@ -48,9 +47,6 @@ public class ServoTest extends OpMode {
             transferServo.setPower(0);
             intakeMotor.setPower(0);
         }
-
-
-
 
         telemetry.addData("fourbar", fourbarServo.getPosition());
         telemetry.addData("Leftdrop", leftDropServo.getPosition());

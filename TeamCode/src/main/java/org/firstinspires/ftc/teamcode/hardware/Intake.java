@@ -10,16 +10,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-        import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 
 public class Intake {
     DcMotor intakeMotor;
-    CRServo transferServo;
-    Servo intakeFlipServo, stackIntakeL, stackIntakeR;
+    CRServo transferServo, conveyorServo;
+    Servo intakeFlipServo, stackIntakeL, emergencyOuttake;
     Gamepad gamepad1, gamepad2;
     ElapsedTime timer = new ElapsedTime();
     int intakePos = 0, intakePos2;
-    double intakeFlipUp = .68, intakeFlipDown = 0.05;
+    double intakeFlipUp = .68, intakeFlipDown = 0.05, emergencyClosed = .41, emergencyOpen = 0;
     double intakeLOut = 1, intakeLIn = 0, intakeROut = 0, intakeRIn = 1;
     boolean intakingTwo = false, transferringTwo = false, intakingStack = false;
     final double intakePower = 0.8, transferPower = 1.0;
@@ -31,14 +30,17 @@ public class Intake {
         this.gamepad2 = gamepad2;
         intakeMotor = hardwareMap.get(DcMotor.class, "INM11");
         transferServo = hardwareMap.get(CRServo.class, "TNS10");
+        conveyorServo = hardwareMap.get(CRServo.class, "CVS15");
         intakeFlipServo = hardwareMap.get(Servo.class, "FUS14");
         stackIntakeL = hardwareMap.get(Servo.class, "ILS13");
-        stackIntakeR = hardwareMap.get(Servo.class, "IRS15");
+        emergencyOuttake = hardwareMap.get(Servo.class, "EMS03");
+
+        transferServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        conveyorServo.setDirection(DcMotorSimple.Direction.REVERSE);
 
         intakeFlipServo.setPosition(intakeFlipUp);
-        stackIntakeL.setPosition(intakeLOut);
-        stackIntakeR.setPosition(intakeROut);
-        transferServo.setDirection(DcMotorSimple.Direction.REVERSE);
+        stackIntakeL.setPosition(intakeROut);
+        emergencyOuttake.setPosition(emergencyClosed);
     }
 
     public void runIntake(){
@@ -57,50 +59,57 @@ public class Intake {
 //        } else if(!transferringTwo){
 //            transferServo.setPower(0);
 //        }
-        if(gamepad1.right_bumper){
+        if(gamepad1.right_trigger > 0.2){
             intakeMotor.setPower(intakePower);
             transferServo.setPower(transferPower);
-        } else if(gamepad1.left_bumper){
+            conveyorServo.setPower(transferPower);
+        } else if(gamepad1.left_trigger > 0.2){
             intakeMotor.setPower(-intakePower);
             transferServo.setPower(-transferPower);
+            conveyorServo.setPower(-transferPower);
         } else if(!intakingTwo){
             intakeMotor.setPower(0);
             transferServo.setPower(0);
+            conveyorServo.setPower(0);
         }
-        stackIntake();
+
+        if(gamepad2.dpad_left){
+            emergencyOuttake.setPosition(emergencyOpen);
+        } else{
+            emergencyOuttake.setPosition(emergencyClosed);
+        }
+//        stackIntake();
         time = timer.milliseconds();
     }
 
-    public void stackIntake(){
-        if(gamepad1.dpad_down && !toggle){
-            flipDown = !flipDown;
-            toggle = true;
-        } else if(!gamepad1.dpad_down && toggle){
-            toggle = false;
-        }
-
-        if(flipDown){
-            intakeFlipServo.setPosition(intakeFlipDown);
-        } else if(!flipDown && stackIntakeL.getPosition() == intakeLOut && stackIntakeR.getPosition() == intakeROut && !intakingStack){
-            intakeFlipServo.setPosition(intakeFlipUp);
-        }
-
-        if(gamepad1.dpad_right){
-            intakingStack = true;
-            startTime = time;
-        }
-
-        if(intakingStack){
-            stackIntakeR.setPosition(intakeRIn);
-            stackIntakeL.setPosition(intakeLIn);
-            if(time >= startTime + 200){
-                stackIntakeR.setPosition(intakeROut);
-                stackIntakeL.setPosition(intakeLOut);
-                intakingStack = false;
-            }
-        }
-
-    }
+//    public void stackIntake(){
+//        if(gamepad1.dpad_down && !toggle){
+//            flipDown = !flipDown;
+//            toggle = true;
+//        } else if(!gamepad1.dpad_down && toggle){
+//            toggle = false;
+//        }
+//
+//        if(flipDown){
+//            intakeFlipServo.setPosition(intakeFlipDown);
+//        } else if(!flipDown && stackIntakeR.getPosition() == intakeROut && !intakingStack){
+//            intakeFlipServo.setPosition(intakeFlipUp);
+//        }
+//
+//        if(gamepad1.dpad_right){
+//            intakingStack = true;
+//            startTime = time;
+//        }
+//
+//        if(intakingStack){
+//            stackIntakeR.setPosition(intakeRIn);
+//            if(time >= startTime + 200){
+//                stackIntakeR.setPosition(intakeROut);
+//                intakingStack = false;
+//            }
+//        }
+//
+//    }
 
     public void flipDown(){
         intakeFlipServo.setPosition(intakeFlipDown);
@@ -111,12 +120,10 @@ public class Intake {
     }
     public void intakeOne(){
         if(intakeFlipServo.getPosition() == intakeFlipDown){
-            stackIntakeR.setPosition(intakeRIn);
-            stackIntakeL.setPosition(intakeLIn);
+            stackIntakeL.setPosition(intakeRIn);
             timer.reset();
             while(timer.milliseconds() < 200){}
-            stackIntakeR.setPosition(intakeROut);
-            stackIntakeL.setPosition(intakeLOut);
+            stackIntakeL.setPosition(intakeROut);
         }
     }
     @Deprecated
@@ -141,6 +148,7 @@ public class Intake {
         }
         if(transferringTwo && timer.milliseconds() > 1600){
             transferServo.setPower(0);
+            conveyorServo.setPower(0);
             transferringTwo = false;
         }
     }
@@ -154,13 +162,11 @@ public class Intake {
     }
 
     public void autonIntakeIn(){
-        stackIntakeL.setPosition(intakeLIn);
-        stackIntakeR.setPosition(intakeRIn);
+        stackIntakeL.setPosition(intakeRIn);
     }
 
     public void autonIntakeOut(){
-        stackIntakeL.setPosition(intakeLOut);
-        stackIntakeR.setPosition(intakeROut);
+        stackIntakeL.setPosition(intakeROut);
     }
 
     public void startReverseIntake(){
@@ -171,6 +177,9 @@ public class Intake {
         intakeMotor.setPower(0);
     }
 
+    public void setEmergencyOuttake(double pos){
+        emergencyOuttake.setPosition(pos);
+    }
     public void telemetry(Telemetry telemetry){
         telemetry.addData("intake position", intakeMotor.getCurrentPosition());
         telemetry.addData("flip pos", intakeFlipServo.getPosition());

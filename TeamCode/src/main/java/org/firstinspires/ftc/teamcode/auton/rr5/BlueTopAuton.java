@@ -48,8 +48,23 @@ public class BlueTopAuton extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(x2, y2a, Math.toRadians(0)))
 //                .splineTo(new Vector2d(x2, y2a), Math.toRadians(0))
                 .addDisplacementMarker(() -> {
-//                    slides.autonDispense();
-//                    slides.autonRetract();
+                    slides.autonExtend();
+                })
+                .waitSeconds(0.5)
+                .addDisplacementMarker(() -> {
+                    slides.autonFBOut();
+                })
+                .waitSeconds(0.25)
+                .addDisplacementMarker(() -> {
+                    slides.autonDispense();
+                })
+                .waitSeconds(0.25)
+                .addDisplacementMarker(() ->{
+                    slides.autonFBIn();
+                })
+                .waitSeconds(0.25)
+                .addDisplacementMarker(()-> {
+                    slides.autonRetract();
                 })
                 .build();
         TrajectorySequence case2 = drive.trajectorySequenceBuilder(startPose)

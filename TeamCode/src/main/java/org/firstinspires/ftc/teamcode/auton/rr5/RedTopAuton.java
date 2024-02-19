@@ -31,22 +31,34 @@ public class RedTopAuton extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         intake = new Intake(hardwareMap, gamepad1, gamepad2);
         camera = new Camera(hardwareMap, "RED");
-//        slides = new Slides(hardwareMap, gamepad1, gamepad2);
-
+        slides = new Slides(hardwareMap, gamepad1, gamepad2);
         Pose2d startPose = new Pose2d(12, -60, Math.toDegrees(90));
         drive.setPoseEstimate(startPose);
+        TrajectorySequence test = drive.trajectorySequenceBuilder(startPose)
+                .addTemporalMarker(() -> {slides.autonExtend();})
+                .waitSeconds(0.5)
+                .addTemporalMarker(() -> {slides.autonFBOut();})
+                .waitSeconds(1)
+                .addTemporalMarker(() -> {slides.autonDispense();})
+                .waitSeconds(0.5)
+                .addTemporalMarker(() ->{slides.autonFBIn();})
+                .waitSeconds(0.25)
+                .addTemporalMarker(()-> {slides.autonRetract();})
+                .waitSeconds(30)
+                .build();
+
         TrajectorySequence case1 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
                 .lineTo(new Vector2d(x1a, y1a))
 //                .splineTo(new Vector2d(x1a, y1a), Math.toRadians(t1a))
-                .addDisplacementMarker(() -> {
+                .addTemporalMarker(() -> {
 //                    intake.startReverseIntake();
 //                    slides.autonExtend();
                 })
                 .waitSeconds(1)
                 .lineToLinearHeading(new Pose2d(x2, y2a, Math.toRadians(0)))
 //                .splineTo(new Vector2d(x2, y2a), Math.toRadians(0))
-                .addDisplacementMarker(() -> {
+                .addTemporalMarker(() -> {
 //                    slides.autonDispense();
 //                    slides.autonRetract();
                 })
@@ -54,15 +66,15 @@ public class RedTopAuton extends LinearOpMode {
         TrajectorySequence case2 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
                 .lineTo(new Vector2d(x1b, y1b))
-                .addDisplacementMarker(() -> {
+                .addTemporalMarker(() -> {
                     intake.startReverseIntake();
                 })
                 .waitSeconds(1)
-                .addDisplacementMarker(() -> {
+                .addTemporalMarker(() -> {
                     intake.stopReverseIntake();
                 })
                 .lineToLinearHeading(new Pose2d(x2, y2b, Math.toRadians(0)))
-                .addDisplacementMarker(() -> {
+                .addTemporalMarker(() -> {
 //                    slides.autonDispense();
 //                    slides.autonRetract();
                 })
@@ -73,7 +85,7 @@ public class RedTopAuton extends LinearOpMode {
                 .turn(Math.toRadians(50))
                 .lineTo(new Vector2d(x1c, y1c))
                 .lineToLinearHeading(new Pose2d(x2-6, y2c, Math.toRadians(0)))
-                .addDisplacementMarker(() -> {
+                .addTemporalMarker(() -> {
 //                    slides.autonDispense();
 //                    slides.autonRetract();
                 })
@@ -88,20 +100,21 @@ public class RedTopAuton extends LinearOpMode {
             }
         }
         waitForStart();
-        switch(pos){
-            case 3:
-                drive.followTrajectorySequence(case1);
-                break;
-            case 2:
-                drive.followTrajectorySequence(case2);
-                break;
-            case 1:
-                drive.followTrajectorySequence(case3);
-                break;
-            default:
-                drive.followTrajectorySequence(case1);
-                break;
-        }
+        drive.followTrajectorySequence(test);
+//        switch(pos){
+//            case 3:
+//                drive.followTrajectorySequence(case1);
+//                break;
+//            case 2:
+//                drive.followTrajectorySequence(case2);
+//                break;
+//            case 1:
+//                drive.followTrajectorySequence(case3);
+//                break;
+//            default:
+//                drive.followTrajectorySequence(case1);
+//                break;
+//        }
         while(!isStopRequested() && opModeIsActive()){
             telemetry.addData("x", drive.getPoseEstimate().getX());
             telemetry.addData("y", drive.getPoseEstimate().getY());

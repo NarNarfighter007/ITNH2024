@@ -27,9 +27,10 @@ public class Slides {
     public static double extendDelay = 100, retractDelay = 100; //ms
     final int slidesMin = 600, boxMin = 400, fourbarMin = 1000, angledOuttakeSlideOffset = 100, fourbarDownSlideOffset = 500;
     public String outtakePos = "Horizontal", fourbarPos = "Out";
-    public int slidePixelExtension = 0;
-    ElapsedTime timer = new ElapsedTime(), timer2 = new ElapsedTime(), delay = new ElapsedTime(), clampTimer = new ElapsedTime();
-    boolean toggle = false, debounce = false, holdIn = false;
+    public int pixelLayers = 0, pixelLayerTicks = 300, pixelLayerOffset = 400;
+    ElapsedTime timer = new ElapsedTime(), timer2 = new ElapsedTime(), delay = new ElapsedTime(),
+            clampTimer = new ElapsedTime(), outtakeDelay = new ElapsedTime();
+    boolean toggle = false, debounce = false, debounce2 = false, holdIn = false;
     double time, startTime, fbTime, clampTime;
     Intake intake;
     public Slides(HardwareMap hardwareMap, Gamepad gamepad1, Gamepad gamepad2){
@@ -73,44 +74,51 @@ public class Slides {
             }
 //            slideMotorR.setTargetPosition(slideTargetPosition);
         }
+
+        if(pixelLayers > 0) {
+            slideMotorL.setTargetPosition(pixelLayers * pixelLayerTicks - pixelLayerOffset);
+        } else{
+            slideMotorL.setTargetPosition(down);
+        }
+
         slideMotorL.setPower(slidePower);
 //        slideMotorR.setPower(slidePower);
     }
 
     public void runSlidesPresets(){
         time = timer2.milliseconds();
-        if (gamepad1.a) {
-            if(getSlideCurPosL() < down + 50) {
-                startTime = time;
-            }
-            outtakePos = "Horizontal";
-            holdIn = false;
-            slideTargetPosition = down;
-        } else if(gamepad1.x){
-            if(getSlideCurPosL() < down + 50) {
-                startTime = time;
-                fbTime = delay.milliseconds();
-            }
-            fourbarPos = "Out";
-            outtakePos = "Horizontal";
-            slideTargetPosition = low;
-        } else if(gamepad1.b) {
-            if(getSlideCurPosL() < down + 50) {
-                startTime = time;
-                fbTime = delay.milliseconds();
-            }
-            fourbarPos = "Out";
-            outtakePos = "Horizontal";
-            slideTargetPosition = mid;
-        } else if(gamepad1.y) {
-            if(getSlideCurPosL() < down + 50) {
-                startTime = time;
-                fbTime = delay.milliseconds();
-            }
-            fourbarPos = "Out";
-            outtakePos = "Horizontal";
-            slideTargetPosition = high;
-        }
+//        if (gamepad1.a) {
+//            if(getSlideCurPosL() < down + 50) {
+//                startTime = time;
+//            }
+//            outtakePos = "Horizontal";
+//            holdIn = false;
+//            slideTargetPosition = down;
+//        } else if(gamepad1.x){
+//            if(getSlideCurPosL() < down + 50) {
+//                startTime = time;
+//                fbTime = delay.milliseconds();
+//            }
+//            fourbarPos = "Out";
+//            outtakePos = "Horizontal";
+//            slideTargetPosition = low;
+//        } else if(gamepad1.b) {
+//            if(getSlideCurPosL() < down + 50) {
+//                startTime = time;
+//                fbTime = delay.milliseconds();
+//            }
+//            fourbarPos = "Out";
+//            outtakePos = "Horizontal";
+//            slideTargetPosition = mid;
+//        } else if(gamepad1.y) {
+//            if(getSlideCurPosL() < down + 50) {
+//                startTime = time;
+//                fbTime = delay.milliseconds();
+//            }
+//            fourbarPos = "Out";
+//            outtakePos = "Horizontal";
+//            slideTargetPosition = high;
+//        }
 //        if(time > startTime + extendDelay) {
 //            slideMotorL.setTargetPosition(slideTargetPosition);
 //            slideMotorR.setTargetPosition(slideTargetPosition);
@@ -122,8 +130,10 @@ public class Slides {
     public void runDispenser(){
         if(slideMotorL.getCurrentPosition() > boxMin && slideMotorL.getTargetPosition() > slidesMin) {
             pitchServo.setPosition(boxUp);
-        } else if(slideMotorL.getCurrentPosition() <= boxMin && holdIn){
+        } else if(slideMotorL.getCurrentPosition() <= boxMin && holdIn && getSlideTargetPos() == down){
             pitchServo.setPosition(boxDown);
+        } else if(slideMotorL.getCurrentPosition() <= boxMin && holdIn && getSlideTargetPos() > down){
+            pitchServo.setPosition(boxAlmostDown);
         } else if(slideMotorL.getCurrentPosition() <= boxMin && !holdIn){
             pitchServo.setPosition(boxAlmostDown);
         }
@@ -139,9 +149,41 @@ public class Slides {
             toggle = false;
         }
 
+        if(gamepad1.b && !debounce){
+            if(pixelLayers == 0){
+                if(getSlideCurPosL() < down + 50) {
+                    startTime = time;
+                    fbTime = delay.milliseconds();
+                }
+                fourbarPos = "Out";
+                outtakePos = "Horizontal";
+                holdIn = false;
+            }
+            if(pixelLayers <=10) pixelLayers++;
+            debounce = true;
+        } else if(!gamepad1.b && debounce){
+            debounce = false;
+        }
+
+        if(gamepad1.x && !debounce2){
+            if(pixelLayers == 1){
+                fourbarPos = "Out";
+                outtakePos = "Horizontal";
+                holdIn = false;
+            }
+            if(pixelLayers > 1) pixelLayers--;
+            debounce2 = true;
+        } else if(!gamepad1.b && debounce2){
+            debounce2 = false;
+        }
+
+        if(gamepad1.a){
+            pixelLayers = 0;
+        }
+
         if(true){
             fourbarPos = "Out";
-        } else{
+        } else if(true){
             fourbarPos = "Down";
         }
 
@@ -149,6 +191,8 @@ public class Slides {
             fourbarServo.setPosition(fourbarOuttake);
         } else if(getSlideCurPosL() > slidesMin && getSlideTargetPos() > slidesMin && fourbarPos.equals("Down")){
             fourbarServo.setPosition(fourbarOuttakeDown);
+        } else if(getSlideCurPosL() < slidesMin && getSlideTargetPos() > slidesMin){
+            fourbarServo.setPosition(fourbarIntakeUp);
         } else if(getSlideCurPosL() >= fourbarMin && getSlideTargetPos() <= slidesMin){
             fourbarServo.setPosition(fourbarMid);
         } else if(getSlideTargetPos() <= slidesMin && holdIn && getSlideCurPosL() < fourbarMin){

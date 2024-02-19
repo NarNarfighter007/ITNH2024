@@ -40,45 +40,45 @@ public class BlueTopAuton extends LinearOpMode {
                 .setReversed(true)
                 .lineTo(new Vector2d(x1a, y1a))
 //                .splineTo(new Vector2d(x1a, y1a), Math.toRadians(t1a))
-                .addDisplacementMarker(() -> {
+                .addTemporalMarker(() -> {
 //                    intake.startReverseIntake();
 //                    slides.autonExtend();
                 })
                 .waitSeconds(1)
                 .lineToLinearHeading(new Pose2d(x2, y2a, Math.toRadians(0)))
 //                .splineTo(new Vector2d(x2, y2a), Math.toRadians(0))
-                .addDisplacementMarker(() -> {
+                .addTemporalMarker(() -> {
                     slides.autonExtend();
                 })
                 .waitSeconds(0.5)
-                .addDisplacementMarker(() -> {
+                .addTemporalMarker(() -> {
                     slides.autonFBOut();
                 })
                 .waitSeconds(0.25)
-                .addDisplacementMarker(() -> {
+                .addTemporalMarker(() -> {
                     slides.autonDispense();
                 })
                 .waitSeconds(0.25)
-                .addDisplacementMarker(() ->{
+                .addTemporalMarker(() ->{
                     slides.autonFBIn();
                 })
                 .waitSeconds(0.25)
-                .addDisplacementMarker(()-> {
+                .addTemporalMarker(()-> {
                     slides.autonRetract();
                 })
                 .build();
         TrajectorySequence case2 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
                 .lineTo(new Vector2d(x1b, y1b))
-                .addDisplacementMarker(() -> {
+                .addTemporalMarker(() -> {
                     intake.startReverseIntake();
                 })
                 .waitSeconds(1)
-                .addDisplacementMarker(() -> {
+                .addTemporalMarker(() -> {
                     intake.stopReverseIntake();
                 })
                 .lineToLinearHeading(new Pose2d(x2, y2b, Math.toRadians(0)))
-                .addDisplacementMarker(() -> {
+                .addTemporalMarker(() -> {
 //                    slides.autonDispense();
 //                    slides.autonRetract();
                 })
@@ -89,7 +89,7 @@ public class BlueTopAuton extends LinearOpMode {
                 .turn(Math.toRadians(-50))
                 .lineTo(new Vector2d(x1c, y1c))
                 .lineToLinearHeading(new Pose2d(x2+6, y2c, Math.toRadians(0)))
-                .addDisplacementMarker(() -> {
+                .addTemporalMarker(() -> {
 //                    slides.autonDispense();
 //                    slides.autonRetract();
                 })

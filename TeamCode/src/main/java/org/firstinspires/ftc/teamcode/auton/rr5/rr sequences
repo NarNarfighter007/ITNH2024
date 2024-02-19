@@ -1,23 +1,23 @@
 rr action sequences because im dumb
 
 Stack intake:
-    .addDisplacementMarker(() -> {intake.autonIntakeFlipDown();})
+    .addTemporalMarker(() -> {intake.autonIntakeFlipDown();})
     .waitSeconds(0.5)
-    .addDisplacementMarker(()->{intake.autonIntakeIn();})
+    .addTemporalMarker(()->{intake.autonIntakeIn();})
     .waitSeconds(.25)
-    .addDisplacementMarker(()->{intake.autonIntakeOut();})
+    .addTemporalMarker(()->{intake.autonIntakeOut();})
     .waitSeconds(.25)
-    .addDisplacementMarker(()->{intake.autonIntakeIn();})
+    .addTemporalMarker(()->{intake.autonIntakeIn();})
     .waitSeconds(.25)
-    .addDisplacementMarker(()->{intake.autonIntakeOut();})
+    .addTemporalMarker(()->{intake.autonIntakeOut();})
 
 Outtake:
-    .addDisplacementMarker(() -> {slides.autonExtend();})
+    .addTemporalMarker(() -> {slides.autonExtend();})
     .waitSeconds(0.5)
-    .addDisplacementMarker(() -> {slides.autonFBOut();})
+    .addTemporalMarker(() -> {slides.autonFBOut();})
     .waitSeconds(0.25)
-    .addDisplacementMarker(() -> {slides.autonDispense();})
+    .addTemporalMarker(() -> {slides.autonDispense();})
     .waitSeconds(0.25)
-    .addDisplacementMarker(() ->{slides.autonFBIn();})
+    .addTemporalMarker(() ->{slides.autonFBIn();})
     .waitSeconds(0.25)
-    .addDisplacementMarker(()-> {slides.autonRetract();})
+    .addTemporalMarker(()-> {slides.autonRetract();})

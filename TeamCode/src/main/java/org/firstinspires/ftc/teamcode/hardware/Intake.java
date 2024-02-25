@@ -18,7 +18,7 @@ public class Intake {
     Gamepad gamepad1, gamepad2;
     ElapsedTime timer = new ElapsedTime();
     int intakePos = 0, intakePos2;
-    double intakeFlipUp = .68, intakeFlipDown = 0.05, emergencyClosed = .41, emergencyOpen = 0;
+    public double intakeFlipUp = .68, intakeFlipDown = 0.05, emergencyClosed = .65, emergencyOpen = 0.11;
     double intakeLOut = 1, intakeLIn = 0, intakeROut = 0, intakeRIn = 1;
     boolean intakingTwo = false, transferringTwo = false, intakingStack = false;
     final double intakePower = 0.8, transferPower = 1.0;
@@ -71,12 +71,6 @@ public class Intake {
             intakeMotor.setPower(0);
             transferServo.setPower(0);
             conveyorServo.setPower(0);
-        }
-
-        if(gamepad2.dpad_left){
-            emergencyOuttake.setPosition(emergencyOpen);
-        } else{
-            emergencyOuttake.setPosition(emergencyClosed);
         }
 //        stackIntake();
         time = timer.milliseconds();
@@ -154,19 +148,19 @@ public class Intake {
     }
 
     public void autonIntakeFlipDown(){
-        intakeFlipServo.setPosition(intakeFlipDown);
+//        intakeFlipServo.setPosition(intakeFlipDown);
     }
 
     public void autonIntakeFlipUp(){
-        intakeFlipServo.setPosition(intakeFlipUp);
+//        intakeFlipServo.setPosition(intakeFlipUp);
     }
 
     public void autonIntakeIn(){
-        stackIntakeL.setPosition(intakeRIn);
+//        stackIntakeL.setPosition(intakeRIn);
     }
 
     public void autonIntakeOut(){
-        stackIntakeL.setPosition(intakeROut);
+//        stackIntakeL.setPosition(intakeROut);
     }
 
     public void startReverseIntake(){
@@ -178,7 +172,7 @@ public class Intake {
     }
 
     public void setEmergencyOuttake(double pos){
-        emergencyOuttake.setPosition(pos);
+//        emergencyOuttake.setPosition(pos);
     }
     public void telemetry(Telemetry telemetry){
         telemetry.addData("intake position", intakeMotor.getCurrentPosition());

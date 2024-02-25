@@ -30,12 +30,13 @@ public class ServoTest extends OpMode {
 
     @Override
     public void loop() {
+//        fourbarServo.setPosition(0.4);
 //        fourbarServo.setPosition(gamepad1.left_stick_y);
 //        leftDropServo.setPosition(gamepad1.left_stick_x);
-        pitchServo.setPosition(gamepad1.right_stick_y);
+//        pitchServo.setPosition(gamepad1.right_stick_y);
 //
-//        boxRotServo.setPosition(gamepad2.left_stick_y);
-//        emergencyOutake.setPosition(gamepad2.right_stick_y);
+        rollServo.setPosition(0.84);
+//        emergencyOutake.setPosition(gamepad1.right_stick_y);
 //        rightDropServo.setPosition(gamepad1.right_stick_x);
         if(gamepad1.right_bumper){
             intakeMotor.setPower(0.8);
@@ -53,6 +54,7 @@ public class ServoTest extends OpMode {
         telemetry.addData("outtake pitch", pitchServo.getPosition());
         telemetry.addData("rightDrop", rightDropServo.getPosition());
         telemetry.addData("outtake roll", rollServo.getPosition());
+        telemetry.addData("emergency outtake", emergencyOutake.getPosition());
 //        telemetry.addData("box rot", boxRotServo.getPosition());
 //        telemetry.addData("intake", intake.getPosition());
 

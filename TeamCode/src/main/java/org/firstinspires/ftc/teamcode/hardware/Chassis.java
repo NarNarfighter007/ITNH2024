@@ -16,7 +16,7 @@ public class Chassis {
     LinearOpMode opMode;
     TeamIMU imu;
     double headingOffset = 0;
-    double autonDriveSpeed = 0.3, teleopDriveSpeed = 0.8, scaleFactor = 1.0;
+    double autonDriveSpeed = 0.3, teleopDriveSpeed = 0.8, scaleFactor = 1.0, normalSpeed = .8, slowSpeed = .3;
     final double driveSpeed = 0.6;
     public static double ticsPerInch = 1881;
     public static double ticsPerInch_r = 1730, backwardTicsPerInch_r = 1720, ticsPerInch_l = 1670, backwardTicsPerInch_l = 1700;
@@ -30,6 +30,7 @@ public class Chassis {
     public static double turnKp = 0.015, turnKi = 0.0011, turnKd = 7000000; //2000000
     public static  double turnIntegralCap = 200;
     public static double slopeTolerance = 0.000000028;
+    boolean toggle = false, slow = false;
 
     //SampleMecanumDrive drive = new SampleMecanumDrive(opMode.hardwareMap);
     public Chassis(HardwareMap hardwareMap, TeamIMU imu, Gamepad gamepad1){
@@ -87,7 +88,7 @@ public class Chassis {
         double x = gamepad1.left_stick_x; //gamepad1.left_stick_x
         double rx = gamepad1.right_stick_x; //gamepad1.right_stick_x
 
-        double botHeading = Math.toRadians(-imu.getHeadingFirstAngle() - headingOffset);
+        double botHeading = Math.toRadians(-imu.getHeadingFirstAngleDeg() - headingOffset);
 
         double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading); //1 90deg
         double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
@@ -107,7 +108,19 @@ public class Chassis {
         backRightMotor.setPower(backRightPower * scaleFactor);
 
         if(gamepad1.right_stick_button){
-            headingOffset = -imu.getHeadingFirstAngle(); //TODO: Check this (not 100% sure if this is right)
+            headingOffset = -imu.getHeadingFirstAngleDeg(); //TODO: Check this (not 100% sure if this is right)
+        }
+
+        if(gamepad1.left_stick_button && !toggle){
+            slow = !slow;
+            toggle = true;
+        } else if(!gamepad1.b && toggle){
+            toggle = false;
+        }
+        if(slow){
+            teleopDriveSpeed = slowSpeed;
+        } else{
+            teleopDriveSpeed = normalSpeed;
         }
     }
 
@@ -166,7 +179,7 @@ public class Chassis {
             }
             double rx = 0;
 
-            double botHeading = Math.toRadians(-imu.getHeadingFirstAngle());
+            double botHeading = Math.toRadians(-imu.getHeadingFirstAngleDeg());
 
             double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
             double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
@@ -392,7 +405,7 @@ public class Chassis {
     public void turnTo(double targetHeading, String direction){
         int tolerance = 8;
         double turnPower = 0.2;
-        double imuHeading = imu.getHeadingFirstAngle();
+        double imuHeading = imu.getHeadingFirstAngleDeg();
         imuHeading = (imuHeading + 360) % 360;
         double curHeading = (imuHeading + headingOffset) % 360; // this is our 'adjusted' current heading
         int multiplier = 1;
@@ -405,7 +418,7 @@ public class Chassis {
         setRightPower(-multiplier * turnPower);
         setLeftPower(multiplier * turnPower);
         while (error > tolerance) {
-            imuHeading = imu.getHeadingFirstAngle();
+            imuHeading = imu.getHeadingFirstAngleDeg();
             imuHeading = (imuHeading + 360) % 360;
             curHeading = (imuHeading + headingOffset) % 360;
             error = Math.abs(curHeading - targetHeading);
@@ -454,7 +467,7 @@ public class Chassis {
     }
 
     public void getTelemetry(Telemetry telemetry){
-        telemetry.addData("heading", getHeading());
+//        telemetry.addData("heading", getHeading());
         telemetry.addData("odoLeft", backLeftMotor.getCurrentPosition());
         telemetry.addData("odoRight", backRightMotor.getCurrentPosition());
         telemetry.addData("odoStrafe", frontRightMotor.getCurrentPosition()); //currently positive to the right

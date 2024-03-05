@@ -12,6 +12,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 @Config
 public class Slides {
     //.2217 - pitch outtake
@@ -19,17 +22,17 @@ public class Slides {
     Servo fourbarServo, pitchServo, rollServo, leftDropServo, rightDropServo;
     Gamepad gamepad1, gamepad2;
     int slideTargetPosition = 0;
-    final int down = 0, low = 550, mid = 1200, high = 1800;
+    final int down = 0, low = 610, mid = 1200, high = 1800;
     final double slidePower = 0.6;
-    public static double leftHold = 0, leftDrop = 0.6, rightHold = 0, rightDrop = 0.6, boxUp = .735,
-            boxAlmostDown = 0.54, boxDown = 0.56, fourbarIntakeUp = .995, fourbarIntakeDown = 0.97, fourbarOuttake = 0.4, fourbarOuttakeDown = .7,
-            fourbarMid = .975, rollVertical = 0.87, rollHorizontal = 0.31, rollLeft = 0.03, rollRight = .76; //box down = 0.16
-    public static double extendDelay = 0, retractDelay = 250; //ms
-    final int slidesMin = 500, boxMin = 400, fourbarMin = 500, angledOuttakeSlideOffset = 200, fourbarDownSlideOffset = 500;
+    public static double leftHold = 0, leftDrop = 0.6, rightHold = 0, rightDrop = 0.6, boxUp = .27,
+            boxAlmostDown = 0.073, boxDown = 0.073, fourbarIntakeUp = .83, fourbarIntakeDown = .8, fourbarOuttake = .07, fourbarOuttakeDown = .7,
+            fourbarMid = .975, rollVertical = .95, rollHorizontal = .43, rollLeft = .12, rollRight = .77; //fb up=.4
+    public static double extendDelay = 0, retractDelay = 300; //ms
+    final int slidesMin = 510, boxMin = 400, fourbarMin = 510, angledOuttakeSlideOffset = 150, fourbarDownSlideOffset = 500, verticalOuttakeSlideOffset = 180;
     public String outtakePos = "Horizontal", fourbarPos = "Out";
-    public int pixelLayers = 0, pixelLayerTicks = 300, pixelLayerOffset = 400;
+    public int pixelLayers = 0, pixelLayerTicks = 315, pixelLayerOffset = 180;
     ElapsedTime timer = new ElapsedTime(), timer2 = new ElapsedTime(), delay = new ElapsedTime(),
-            clampTimer = new ElapsedTime(), outtakeDelay = new ElapsedTime();
+            clampTimer = new ElapsedTime(), outtakeDelay = new ElapsedTime(), retractDelayTimer = new ElapsedTime();
     boolean toggle = false, debounce = false, debounce2 = false, holdIn = false;
     double time, startTime, fbTime, clampTime;
     Intake intake;
@@ -57,7 +60,6 @@ public class Slides {
         rightDropServo.setPosition(rightHold);
         fourbarServo.setPosition(fourbarIntakeDown);
         pitchServo.setPosition(boxDown);
-//        boxRotServo.setPosition(boxRotIntake);
     }
 
     public void runSlides(){
@@ -74,19 +76,84 @@ public class Slides {
 //            else{
 //                slideMotorL.setTargetPosition(slideTargetPosition);
 //            }
-//            slideMotorR.setTargetPosition(slideTargetPosition);
         } else if(slideTargetPosition == down && time > startTime + retractDelay){
             slideMotorL.setTargetPosition(slideTargetPosition);
         }
 
-//        if(pixelLayers > 0) {
-//            slideMotorL.setTargetPosition(pixelLayers * pixelLayerTicks - pixelLayerOffset);
-//        } else{
-//            slideMotorL.setTargetPosition(down);
-//        }
-
         slideMotorL.setPower(slidePower);
-//        slideMotorR.setPower(slidePower);
+    }
+
+    double startRetractTime = 0, retractTime = 0;
+    public void runSlidesPixelLayer(){
+        slideMotorL.setPower(slidePower);
+        retractTime = retractDelayTimer.milliseconds();
+        if(pixelLayers > 0 && outtakePos == "Horizontal") {
+            slideTargetPosition = pixelLayers * pixelLayerTicks + pixelLayerOffset;
+            if(pixelLayers == 1) slideTargetPosition+=40;
+        } else if(pixelLayers > 0 && (outtakePos == "Left" || outtakePos == "Right")){
+            slideTargetPosition = pixelLayers * pixelLayerTicks + pixelLayerOffset + angledOuttakeSlideOffset;
+            if(pixelLayers == 1) slideTargetPosition+=40;
+        } else if(pixelLayers > 0 && outtakePos == "Vertical"){
+            slideTargetPosition = pixelLayers * pixelLayerTicks + pixelLayerOffset + verticalOuttakeSlideOffset;
+            if(pixelLayers == 1) slideTargetPosition+=40;
+        } else{
+            slideTargetPosition = down;
+        }
+
+        if(getSlideCurPosL() <= 700 && retractTime > startRetractTime + retractDelay && slideTargetPosition == down){
+            slideMotorL.setTargetPosition(slideTargetPosition);
+        } else if(getSlideCurPosL() > 700 || slideTargetPosition != down){
+            slideMotorL.setTargetPosition(slideTargetPosition);
+        }
+
+        time = timer2.milliseconds();
+        if (gamepad1.a) {
+            startTime = time;
+            outtakePos = "Horizontal";
+            slideTargetPosition = down;
+            pixelLayers = 0;
+            startRetractTime = retractTime;
+        } else if(gamepad1.x){
+            if(getSlideCurPosL() < down + 50) {
+                startTime = time;
+                fbTime = delay.milliseconds();
+            }
+            fourbarPos = "Out";
+        } else if(gamepad1.b) {
+            if(getSlideCurPosL() < down + 50) {
+                startTime = time;
+                fbTime = delay.milliseconds();
+            }
+            fourbarPos = "Out";
+        }
+
+        if(gamepad1.b && !debounce){
+            if(pixelLayers == 0){
+                if(getSlideCurPosL() < down + 50) {
+                    startTime = time;
+                    fbTime = delay.milliseconds();
+                }
+                fourbarPos = "Out";
+                holdIn = false;
+            }
+            if(pixelLayers <=10) pixelLayers++;
+            debounce = true;
+        } else if(!gamepad1.b && debounce){
+            debounce = false;
+        }
+
+        if(gamepad1.x && !debounce2){
+            if(pixelLayers == 1){
+                fourbarPos = "Out";
+                holdIn = false;
+                pixelLayers--;
+                startRetractTime = retractTime;
+            }
+            if(pixelLayers > 1) pixelLayers--;
+            debounce2 = true;
+        } else if(!gamepad1.x && debounce2){
+            debounce2 = false;
+        }
     }
 
     public void runSlidesPresets(){
@@ -153,41 +220,9 @@ public class Slides {
             toggle = false;
         }
 
-//        if(gamepad1.b && !debounce){
-//            if(pixelLayers == 0){
-//                if(getSlideCurPosL() < down + 50) {
-//                    startTime = time;
-//                    fbTime = delay.milliseconds();
-//                }
-//                fourbarPos = "Out";
-//                outtakePos = "Horizontal";
-//                holdIn = false;
-//            }
-//            if(pixelLayers <=10) pixelLayers++;
-//            debounce = true;
-//        } else if(!gamepad1.b && debounce){
-//            debounce = false;
-//        }
-
-//        if(gamepad1.x && !debounce2){
-//            if(pixelLayers == 1){
-//                fourbarPos = "Out";
-//                outtakePos = "Horizontal";
-//                holdIn = false;
-//            }
-//            if(pixelLayers > 1) pixelLayers--;
-//            debounce2 = true;
-//        } else if(!gamepad1.b && debounce2){
-//            debounce2 = false;
-//        }
-
-//        if(gamepad1.a){
-//            pixelLayers = 0;
-//        }
-
         if(true){
             fourbarPos = "Out";
-        } else if(true){
+        } else if(false){
             fourbarPos = "Down";
         }
 
@@ -242,13 +277,13 @@ public class Slides {
             rollServo.setPosition(rollVertical);
         }
 
-        if(getSlideTargetPos() > down + 200 && getSlideCurPosL() < slidesMin){
-            intake.setEmergencyOuttake(0.11);
-        } else if(!gamepad2.dpad_left){
-            intake.setEmergencyOuttake(.65);
-        } else if(gamepad2.dpad_left){
-            intake.setEmergencyOuttake(0.11);
-        }
+//        if(getSlideTargetPos() > down + 200 && getSlideCurPosL() < slidesMin){
+//            intake.setEmergencyOuttake(0.11);
+//        } else if(!gamepad2.dpad_left){
+//            intake.setEmergencyOuttake(.65);
+//        } else if(gamepad2.dpad_left){
+//            intake.setEmergencyOuttake(0.11);
+//        }
 
         if(gamepad2.a){
             outtakePos = "Horizontal";
@@ -289,35 +324,125 @@ public class Slides {
     }
 
     public void autonExtend(){
-//        slideMotorL.setTargetPosition(low - 100);
-//        slideMotorL.setPower(slidePower);
+        slideMotorL.setTargetPosition(low);
+        slideMotorL.setPower(slidePower);
     }
 
     public void autonRetract(){
-//        slideMotorL.setTargetPosition(down);
-//        slideMotorL.setPower(slidePower);
+        slideMotorL.setTargetPosition(down);
+        slideMotorL.setPower(slidePower);
     }
 
-    public void autonFBOut(){
-//        fourbarServo.setPosition(fourbarOuttake);
+    public void autonFBOuttake(){
+        fourbarServo.setPosition(fourbarOuttake);
     }
 
-    public void autonFBIn(){
-//        fourbarServo.setPosition(fourbarIntakeDown);
+    public void autonFBIntakeDown(){
+        fourbarServo.setPosition(fourbarIntakeDown);
+    }
+
+    public void autonFBIntakeUp(){
+        fourbarServo.setPosition(fourbarIntakeUp);
     }
 
     public void autonDispense(){
-//        leftDropServo.setPosition(leftDrop);
-//        rightDropServo.setPosition(rightDrop);
+        leftDropServo.setPosition(leftDrop);
+        rightDropServo.setPosition(rightDrop);
+    }
+
+    public void autonGrab(){
+        leftDropServo.setPosition(leftHold);
+        rightDropServo.setPosition(rightHold);
     }
 
     public void autonPitchUp(){
-//        pitchServo.setPosition(boxUp);
+        pitchServo.setPosition(boxUp);
     }
 
     public void autonPitchDown(){
-//        pitchServo.setPosition(boxDown);
+        pitchServo.setPosition(boxDown);
     }
+
+    public void autonPitchHover(){
+        pitchServo.setPosition(boxAlmostDown);
+    }
+
+    public void autonClamp(){
+        Timer clampSequence = new Timer();
+        clampSequence.schedule(clamp, 0);
+        clampSequence.schedule(grab, 200);
+    }
+
+    TimerTask clamp = new TimerTask() {
+        @Override
+        public void run() {
+            autonFBIntakeDown(); autonPitchDown();
+        }
+    };
+    TimerTask grab = new TimerTask() {
+        @Override
+        public void run() {
+            autonGrab();
+        }
+    };
+
+    public void outtakeSequence(){
+        Timer outtakeSequence = new Timer();
+
+        outtakeSequence.schedule(grab, 1);
+        outtakeSequence.schedule(hover, 100);
+        outtakeSequence.schedule(extend, 200);
+        outtakeSequence.schedule(fbOut, 600);
+        outtakeSequence.schedule(dispense, 1200);
+        //back up
+        outtakeSequence.schedule(fbIntakeUp, 2200);
+        outtakeSequence.schedule(pitchAlmostDown, 2400);
+        outtakeSequence.schedule(retract, 2600);
+    }
+    TimerTask hover = new TimerTask() {
+        @Override
+        public void run() {
+            autonPitchHover();autonFBIntakeUp();
+        }
+    };
+    TimerTask extend = new TimerTask(){
+        @Override
+        public void run() {
+            autonExtend();
+        }
+    };
+    TimerTask fbOut = new TimerTask() {
+        @Override
+        public void run() {
+            autonFBOuttake();autonPitchUp();
+        }
+    };
+    TimerTask dispense = new TimerTask(){
+
+        @Override
+        public void run() {
+            autonDispense();
+        }
+    };
+    TimerTask fbIntakeUp = new TimerTask(){
+
+        @Override
+        public void run() {
+            autonFBIntakeUp();
+        }
+    };
+    TimerTask pitchAlmostDown = new TimerTask() {
+        @Override
+        public void run() {
+            autonPitchHover();
+        }
+    };
+    TimerTask retract = new TimerTask() {
+        @Override
+        public void run() {
+            autonRetract();
+        }
+    };
 
     public int getSlideCurPosL(){
         return slideMotorL.getCurrentPosition();
@@ -333,14 +458,12 @@ public class Slides {
 //        telemetry.addData("startTime", startTime);
         telemetry.addData("Slide pos", getSlideCurPosL());
         telemetry.addData("Slide target", getSlideTargetPos());
+        telemetry.addData("Pixel Level", pixelLayers);
 //        telemetry.addData("Below slide min", getSlideCurPosL() < slidesMin);
-        telemetry.addData("fb", fourbarServo.getPosition());
-        telemetry.addData("box", pitchServo.getPosition());
-        telemetry.addData("slide power", slideMotorL.getPower());
-        telemetry.addData("outtakePos", outtakePos);
-        telemetry.addData("roll", rollServo.getPosition());
-        telemetry.addData("pwm status", rollServo.getController().getPwmStatus());
-//        telemetry.addData("getSlideCurPosL() > boxMin", getSlideCurPosL() > boxMin);
-//        telemetry.addData("getSlideTargetPos() > down + 100", getSlideTargetPos() > down + 100);
+//        telemetry.addData("fb", fourbarServo.getPosition());
+//        telemetry.addData("box", pitchServo.getPosition());
+//        telemetry.addData("slide power", slideMotorL.getPower());
+//        telemetry.addData("outtakePos", outtakePos);
+//        telemetry.addData("roll", rollServo.getPosition());
     }
 }

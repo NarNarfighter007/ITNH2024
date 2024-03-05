@@ -4,6 +4,8 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class TeamIMU {
     BNO055IMU imu;
     public double x, y, z;
@@ -26,9 +28,19 @@ public class TeamIMU {
         this(hardwareMap);
     }
 
-    public double getHeadingFirstAngle(){
+    public double getHeadingFirstAngleDeg(){
         double heading;
         heading = imu.getAngularOrientation().firstAngle;
         return Math.toDegrees(heading);
+    }
+
+    public double getHeadingFirstAngleRad(){
+        double heading;
+        heading = imu.getAngularOrientation().firstAngle;
+        return Math.PI*2-Math.abs(heading);
+    }
+
+    public void telemetry(Telemetry telemetry){
+        telemetry.addData("headingIMU", getHeadingFirstAngleDeg());
     }
 }

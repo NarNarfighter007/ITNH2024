@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.auton.rr5;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -12,9 +11,6 @@ import org.firstinspires.ftc.teamcode.hardware.Camera;
 import org.firstinspires.ftc.teamcode.hardware.Intake;
 import org.firstinspires.ftc.teamcode.hardware.Slides;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
-
-import java.util.Vector;
 
 @Config
 @Autonomous
@@ -41,13 +37,13 @@ public class BlueTopAuton extends LinearOpMode {
                 .lineTo(new Vector2d(x1a, y1a))
                 .addTemporalMarker(() -> {slides.autonExtend();intake.setEmergencyOuttake(intake.emergencyOpen);})
                 .waitSeconds(0.4)
-                .addTemporalMarker(() -> {slides.autonFBOut();slides.autonPitchUp();})
+                .addTemporalMarker(() -> {slides.autonFBOuttake();slides.autonPitchUp();})
                 .waitSeconds(0.5)
                 .lineToLinearHeading(new Pose2d(x2, y2a, Math.toRadians(0)))
                 .addTemporalMarker(() -> {slides.autonDispense();})
                 .waitSeconds(0.5)
                 .back(7)
-                .addTemporalMarker(() ->{slides.autonFBIn();})
+                .addTemporalMarker(() ->{slides.autonFBIntakeDown();})
                 .waitSeconds(0.25)
                 .addTemporalMarker(() -> {slides.autonPitchDown();})
                 .waitSeconds(0.25)
@@ -58,13 +54,13 @@ public class BlueTopAuton extends LinearOpMode {
                 .lineTo(new Vector2d(x1b, y1b))
                 .addTemporalMarker(() -> {slides.autonExtend();intake.setEmergencyOuttake(intake.emergencyOpen);})
                 .waitSeconds(0.4)
-                .addTemporalMarker(() -> {slides.autonFBOut();slides.autonPitchUp();})
+                .addTemporalMarker(() -> {slides.autonFBOuttake();slides.autonPitchUp();})
                 .waitSeconds(0.5)
                 .lineToLinearHeading(new Pose2d(x2, y2b, Math.toRadians(0)))
                 .addTemporalMarker(() -> {slides.autonDispense();})
                 .waitSeconds(0.5)
                 .back(7)
-                .addTemporalMarker(() ->{slides.autonFBIn();})
+                .addTemporalMarker(() ->{slides.autonFBIntakeDown();})
                 .waitSeconds(0.25)
                 .addTemporalMarker(() -> {slides.autonPitchDown();})
                 .waitSeconds(0.25)
@@ -77,13 +73,13 @@ public class BlueTopAuton extends LinearOpMode {
                 .lineTo(new Vector2d(x1c, y1c))
                 .addTemporalMarker(() -> {slides.autonExtend();intake.setEmergencyOuttake(intake.emergencyOpen);})
                 .waitSeconds(0.4)
-                .addTemporalMarker(() -> {slides.autonFBOut();slides.autonPitchUp();})
+                .addTemporalMarker(() -> {slides.autonFBOuttake();slides.autonPitchUp();})
                 .waitSeconds(0.5)
                 .lineToSplineHeading(new Pose2d(x2+3, y2c, Math.toRadians(0)))
                 .addTemporalMarker(() -> {slides.autonDispense();})
                 .waitSeconds(0.5)
                 .back(7)
-                .addTemporalMarker(() ->{slides.autonFBIn();})
+                .addTemporalMarker(() ->{slides.autonFBIntakeDown();})
                 .waitSeconds(0.25)
                 .addTemporalMarker(() -> {slides.autonPitchDown();})
                 .waitSeconds(0.25)

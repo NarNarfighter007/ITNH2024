@@ -35,8 +35,9 @@ public class Teleop extends OpMode{
     @Override
     public void loop() {
         chassis.fieldCentricDrive();
-        slides.runSlides();
-        slides.runSlidesPresets();
+//        slides.runSlides();
+//        slides.runSlidesPresets();
+        slides.runSlidesPixelLayer();
         intake.runIntake();
         slides.runDispenser();
         hang.runHang();
@@ -44,6 +45,9 @@ public class Teleop extends OpMode{
         airplane.runAirplane();
 //        intake.telemetry(telemetry);
         slides.telemetry(telemetry);
+        chassis.getTelemetry(telemetry);
+        intake.telemetry(telemetry);
+        imu.telemetry(telemetry);
 //        telemetry.addData("imu", imu.getHeadingFirstAngle());
     }
 }

@@ -41,7 +41,7 @@ public class Slides {
         this.gamepad2 = gamepad2;
         intake = new Intake(hardwareMap, gamepad1, gamepad2);
         slideMotorL =  hardwareMap.get(DcMotorEx.class, "SLM01");
-//        slideMotorR =  hardwareMap.get(DcMotorEx.class, "RLM01");
+
         fourbarServo = hardwareMap.get(Servo.class, "FBS00");
         pitchServo = hardwareMap.get(Servo.class, "BXS01");
         rollServo = hardwareMap.get(Servo.class, "BRS05"); //BRS05
@@ -52,10 +52,7 @@ public class Slides {
         slideMotorL.setTargetPosition(down);
         slideMotorL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-//        slideMotorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        slideMotorR.setTargetPosition(down);
-//        slideMotorR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
+        rollServo.setPosition(rollVertical);
         leftDropServo.setPosition(leftHold);
         rightDropServo.setPosition(rightHold);
         fourbarServo.setPosition(fourbarIntakeDown);
@@ -63,8 +60,8 @@ public class Slides {
     }
 
     public void runSlides(){
-//        slideTargetPosition += gamepad1.right_trigger * 50;
-//        slideTargetPosition -= gamepad1.left_trigger * 50;
+        slideTargetPosition += gamepad2.right_trigger * 50;
+        slideTargetPosition -= gamepad2.left_trigger * 50;
         if(time > startTime + extendDelay && slideTargetPosition > down+100) { //TODO: fix this its actually so bad
             if(outtakePos.equals("Left") || outtakePos.equals("Right")) {
                 slideMotorL.setTargetPosition(slideTargetPosition - angledOuttakeSlideOffset - ((fourbarPos.equals("Down")) ? fourbarDownSlideOffset : 0));
@@ -73,9 +70,6 @@ public class Slides {
             } else{
                 slideMotorL.setTargetPosition(slideTargetPosition);
             }
-//            else{
-//                slideMotorL.setTargetPosition(slideTargetPosition);
-//            }
         } else if(slideTargetPosition == down && time > startTime + retractDelay){
             slideMotorL.setTargetPosition(slideTargetPosition);
         }
@@ -134,7 +128,6 @@ public class Slides {
                     fbTime = delay.milliseconds();
                 }
                 fourbarPos = "Out";
-                holdIn = false;
             }
             if(pixelLayers <=10) pixelLayers++;
             debounce = true;
@@ -188,14 +181,7 @@ public class Slides {
             outtakePos = "Horizontal";
             slideTargetPosition = high;
         }
-//        if(time > startTime + extendDelay && getSlideTargetPos() > down) {
-//            slideMotorL.setTargetPosition(slideTargetPosition);
-////            slideMotorR.setTargetPosition(slideTargetPosition);
-//        } else if(time > startTime + retractDelay && getSlideTargetPos() == down){
-//            slideMotorL.setTargetPosition(slideTargetPosition);
-//        }
         slideMotorL.setPower(slidePower);
-//        slideMotorR.setPower(slidePower);
     }
 
     public void runDispenser(){
@@ -208,9 +194,6 @@ public class Slides {
         } else if(slideMotorL.getCurrentPosition() <= boxMin && !holdIn){
             pitchServo.setPosition(boxAlmostDown);
         }
-//        else if(slideMotor.getTargetPosition() < boxMin){
-//            pitchServo.setPosition(boxMid);
-//        }
 
         if(gamepad1.dpad_up && !toggle){
             holdIn = !holdIn;
@@ -259,14 +242,12 @@ public class Slides {
             leftDropServo.setPosition(leftHold);
             rightDropServo.setPosition(rightHold);
         }
-//        else if(holdIn && slideTargetPosition == down && getSlideCurPos() < slidesMin){
-//            dropServo.setPosition(leftHold);
-//        }
+
         else if(slideTargetPosition == down && getSlideCurPosL() < slidesMin){
             leftDropServo.setPosition(leftDrop);
             rightDropServo.setPosition(rightDrop);
         }
-// && delay.milliseconds() > fbTime + 200
+
         if(getSlideCurPosL() > boxMin && slideTargetPosition > down + 100 && outtakePos.equals("Horizontal")){
             rollServo.setPosition(rollHorizontal);
         } else if(getSlideCurPosL() > boxMin && slideTargetPosition > down + 100 && outtakePos.equals("Left")){
@@ -276,14 +257,6 @@ public class Slides {
         } else{
             rollServo.setPosition(rollVertical);
         }
-
-//        if(getSlideTargetPos() > down + 200 && getSlideCurPosL() < slidesMin){
-//            intake.setEmergencyOuttake(0.11);
-//        } else if(!gamepad2.dpad_left){
-//            intake.setEmergencyOuttake(.65);
-//        } else if(gamepad2.dpad_left){
-//            intake.setEmergencyOuttake(0.11);
-//        }
 
         if(gamepad2.a){
             outtakePos = "Horizontal";
@@ -296,35 +269,13 @@ public class Slides {
         }
     }
 
-    @Deprecated
-    public void outtakeYellow(){
-        leftDropServo.setPosition(leftHold);
-        slideMotorL.setTargetPosition(low);
-//        slideMotorR.setTargetPosition(low);
+    public void autonExtend(){
+        slideMotorL.setTargetPosition(pixelLayerTicks + pixelLayerOffset + 120);
         slideMotorL.setPower(slidePower);
-//        slideMotorR.setPower(slidePower);
-        timer.reset();
-        if (slideMotorL.getCurrentPosition() > slidesMin) {
-            fourbarServo.setPosition(fourbarOuttake);
-            pitchServo.setPosition(boxUp);
-            rollServo.setPosition(rollHorizontal);
-        }
-        if (slideMotorL.getCurrentPosition() >= low - 30) {
-            leftDropServo.setPosition(leftDrop);
-            timer.reset();
-        }
-        if (timer.milliseconds() > 1000) {
-            leftDropServo.setPosition(leftHold);
-            slideMotorL.setTargetPosition(down);
-            fourbarServo.setPosition(fourbarIntakeDown);
-            pitchServo.setPosition(boxDown);
-            rollServo.setPosition(rollVertical);
-        }
-        while(slideMotorL.getCurrentPosition() > down + 20){}
     }
 
-    public void autonExtend(){
-        slideMotorL.setTargetPosition(low);
+    public void autonExtendHigh(){
+        slideMotorL.setTargetPosition(pixelLayerTicks * 1 + pixelLayerOffset + 120);
         slideMotorL.setPower(slidePower);
     }
 
@@ -367,10 +318,10 @@ public class Slides {
         pitchServo.setPosition(boxAlmostDown);
     }
 
-    public void autonClamp(){
+    public void autonClamp(int delayMillis){
         Timer clampSequence = new Timer();
-        clampSequence.schedule(clamp, 0);
-        clampSequence.schedule(grab, 200);
+        clampSequence.schedule(clamp, 0 + delayMillis);
+        clampSequence.schedule(clampGrab, 200 + delayMillis);
     }
 
     TimerTask clamp = new TimerTask() {
@@ -379,6 +330,13 @@ public class Slides {
             autonFBIntakeDown(); autonPitchDown();
         }
     };
+    TimerTask clampGrab = new TimerTask() {
+        @Override
+        public void run() {
+            autonGrab();
+        }
+    };
+
     TimerTask grab = new TimerTask() {
         @Override
         public void run() {
@@ -386,18 +344,26 @@ public class Slides {
         }
     };
 
-    public void outtakeSequence(){
+    TimerTask grab2 = new TimerTask() {
+        @Override
+        public void run() {
+            autonGrab();
+        }
+    };
+
+    public void autonOuttakeSequence1(int delayMillis){
         Timer outtakeSequence = new Timer();
 
-        outtakeSequence.schedule(grab, 1);
-        outtakeSequence.schedule(hover, 100);
-        outtakeSequence.schedule(extend, 200);
-        outtakeSequence.schedule(fbOut, 600);
-        outtakeSequence.schedule(dispense, 1200);
+        outtakeSequence.schedule(grab, delayMillis);
+        outtakeSequence.schedule(hover, 100 + delayMillis);
+        outtakeSequence.schedule(extend, 400 + delayMillis);
+        outtakeSequence.schedule(fbOut, 1000 + delayMillis);
+        outtakeSequence.schedule(dispense, 3000 + delayMillis);
         //back up
-        outtakeSequence.schedule(fbIntakeUp, 2200);
-        outtakeSequence.schedule(pitchAlmostDown, 2400);
-        outtakeSequence.schedule(retract, 2600);
+        outtakeSequence.schedule(fbIntakeUp, 3500 + delayMillis);
+        outtakeSequence.schedule(pitchAlmostDown, 3800 + delayMillis);
+        outtakeSequence.schedule(retract, 4100 + delayMillis);
+        outtakeSequence.schedule(open, 4100 + delayMillis);
     }
     TimerTask hover = new TimerTask() {
         @Override
@@ -438,6 +404,79 @@ public class Slides {
         }
     };
     TimerTask retract = new TimerTask() {
+        @Override
+        public void run() {
+            autonRetract();
+        }
+    };
+    TimerTask open = new TimerTask(){
+
+        @Override
+        public void run() {
+            autonDispense();
+        }
+    };
+
+    public void autonOuttakeSequence2(int delayMillis){
+        Timer outtakeSequence2 = new Timer();
+
+        outtakeSequence2.schedule(grab2, 200 + delayMillis);
+        outtakeSequence2.schedule(hover2, 300 + delayMillis);
+        outtakeSequence2.schedule(extend2, 600 + delayMillis);
+        outtakeSequence2.schedule(fbOut2, 1000 + delayMillis);
+        outtakeSequence2.schedule(dispense2, 3000 + delayMillis);
+        //back up
+        outtakeSequence2.schedule(fbIntakeUp2, 3600 + delayMillis);
+        outtakeSequence2.schedule(pitchAlmostDown2, 3800 + delayMillis);
+        outtakeSequence2.schedule(retract2, 4000 + delayMillis);
+    }
+    TimerTask open2 = new TimerTask(){
+
+        @Override
+        public void run() {
+            autonDispense();
+        }
+    };
+
+    TimerTask hover2 = new TimerTask() {
+        @Override
+        public void run() {
+            autonPitchHover();autonFBIntakeUp();
+        }
+    };
+    TimerTask extend2 = new TimerTask(){
+        @Override
+        public void run() {
+            autonExtendHigh();
+        }
+    };
+    TimerTask fbOut2 = new TimerTask() {
+        @Override
+        public void run() {
+            autonFBOuttake();autonPitchUp();
+        }
+    };
+    TimerTask dispense2 = new TimerTask(){
+
+        @Override
+        public void run() {
+            autonDispense();
+        }
+    };
+    TimerTask fbIntakeUp2 = new TimerTask(){
+
+        @Override
+        public void run() {
+            autonFBIntakeUp();
+        }
+    };
+    TimerTask pitchAlmostDown2 = new TimerTask() {
+        @Override
+        public void run() {
+            autonPitchHover();
+        }
+    };
+    TimerTask retract2 = new TimerTask() {
         @Override
         public void run() {
             autonRetract();

@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.hardware.Intake;
 import org.firstinspires.ftc.teamcode.hardware.Slides;
 import org.firstinspires.ftc.teamcode.hardware.TeamIMU;
 
+@Disabled
 @Autonomous
 public class BlueTopParkAuto extends LinearOpMode{
     TeamIMU imu;

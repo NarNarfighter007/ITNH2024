@@ -14,10 +14,12 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 @Config
 @Autonomous(group = "Auton")
-public class BlueTopCycleAuton extends LinearOpMode {
-    public static int x1a = 23, y1a = 37, t1a = -90, x2 = 52, y2a = 42;
-    public static int x1b = 18, y1b = 26, t1b = -90, y2b = 37;
-    public static int x1c = 4, y1c = 34, t1c = -90, y2c = 30;
+public class BlueBotCycleAuton extends LinearOpMode {
+    //    public static int x1a = 24, y1a = 36, t1a = -90, x2 = 48, y2a = 40; //maybe sort of proper vals
+    public static int x1a = 30, y1a = 38, t1a = -90, x2 = 58, y2a = 53; //compensated vals
+    public static int x1b = 20, y1b = 28, t1b = -90, y2b = 51;
+    public static int x1c = 16, y1c = 34, t1c = -90, y2c = 46;
+    public static int offsetHeading = 0;
     int pos = 1;
     Intake intake;
     Slides slides;
@@ -35,41 +37,54 @@ public class BlueTopCycleAuton extends LinearOpMode {
         TrajectorySequence case1 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
                 .splineTo(new Vector2d(x1a, y1a), Math.toRadians(-90))
-                .forward(5)
                 .addTemporalMarker(()->{
-                    slides.autonOuttakeSequence1(0);
+                    slides.autonOuttakeSequence1(100);
                 })
-                .setReversed(false)
-                .splineTo(new Vector2d(x2, y2a), Math.toRadians(0))
-                .waitSeconds(0.5)
+                .splineTo(new Vector2d(x2, y2a), Math.toRadians(180))
                 .build();
         TrajectorySequence case2 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
                 .lineTo(new Vector2d(x1b, y1b))
-                .addTemporalMarker(()->{
-                    slides.autonOuttakeSequence1(850);
-                })
-                .forward(8)
-                .setReversed(false)
-                .splineTo(new Vector2d(x2+1, y2b), Math.toRadians(0))
+                .addTemporalMarker(() -> {slides.autonExtend();})
+                .waitSeconds(0.4)
+                .addTemporalMarker(() -> {slides.autonFBOuttake();slides.autonPitchUp();})
                 .waitSeconds(0.5)
+                .lineToLinearHeading(new Pose2d(x2, y2b, Math.toRadians(offsetHeading)))
+                .addTemporalMarker(() -> {slides.autonDispense();})
+                .waitSeconds(0.5)
+                .back(7)
+                .addTemporalMarker(() ->{slides.autonFBIntakeDown();})
+                .waitSeconds(0.25)
+                .addTemporalMarker(() -> {slides.autonPitchDown();})
+                .waitSeconds(0.25)
+                .addTemporalMarker(()-> {slides.autonRetract();})
                 .build();
         TrajectorySequence case3 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
                 .lineTo(new Vector2d(x1c+8, y1c))
-                .turn(Math.toRadians(-80))
+                .turn(Math.toRadians(-90))
                 .lineTo(new Vector2d(x1c, y1c))
-                .addTemporalMarker(()->{
-                    slides.autonOuttakeSequence1(600);
-                })
-                .setReversed(false)
-                .splineTo(new Vector2d(x2, y2c), Math.toRadians(0))
+                .addTemporalMarker(() -> {slides.autonExtend();})
+                .waitSeconds(0.4)
+                .addTemporalMarker(() -> {slides.autonFBOuttake();slides.autonPitchUp();})
                 .waitSeconds(0.5)
+                .lineToSplineHeading(new Pose2d(x2+3, y2c, Math.toRadians(offsetHeading)))
+                .addTemporalMarker(() -> {slides.autonDispense();})
+                .waitSeconds(0.5)
+                .back(7)
+                .addTemporalMarker(() ->{slides.autonFBIntakeDown();})
+                .waitSeconds(0.25)
+                .addTemporalMarker(() -> {slides.autonPitchDown();})
+                .waitSeconds(0.25)
+                .addTemporalMarker(()-> {slides.autonRetract();})
                 .build();
 
         TrajectorySequence transition1 = drive.trajectorySequenceBuilder(case1.end())
                 .setReversed(true)
-                .splineTo(new Vector2d(36,6), Math.toRadians(180))
+//                .splineTo(new Vector2d(40,12), Math.toRadians(180))
+                .splineTo(new Vector2d(24,6), Math.toRadians(180-offsetHeading))
+//                .lineToSplineHeading(new Pose2d(40, 12, Math.toRadians(0)))
+//                .lineToSplineHeading(new Pose2d(24, 12, Math.toRadians(0)))
                 .addTemporalMarker(() -> {
                     intake.autonIntakeFlipDown();
                     intake.autonIntakeOut();
@@ -77,7 +92,7 @@ public class BlueTopCycleAuton extends LinearOpMode {
                 .build();
         TrajectorySequence transition2 = drive.trajectorySequenceBuilder(case2.end())
                 .setReversed(true)
-                .splineTo(new Vector2d(36, 6), Math.toRadians(180))
+                .lineToLinearHeading(new Pose2d(0, 12, Math.toRadians(180+offsetHeading)))
                 .addTemporalMarker(() -> {
                     intake.autonIntakeFlipDown();
                     intake.autonIntakeOut();
@@ -85,89 +100,45 @@ public class BlueTopCycleAuton extends LinearOpMode {
                 .build();
         TrajectorySequence transition3 = drive.trajectorySequenceBuilder(case3.end())
                 .setReversed(true)
-                .splineTo(new Vector2d(36, 6), Math.toRadians(180))
+                .lineToLinearHeading(new Pose2d(0, 12, Math.toRadians(180+offsetHeading)))
                 .addTemporalMarker(() -> {
                     intake.autonIntakeFlipDown();
                     intake.autonIntakeOut();
                 })
                 .build();
 
-        TrajectorySequence cycle1 = drive.trajectorySequenceBuilder(transition1.end())
+        TrajectorySequence cycle = drive.trajectorySequenceBuilder(transition1.end())
                 .setReversed(true)
-                .splineTo(new Vector2d(-60, 1), Math.toRadians(180))
-//                .lineToLinearHeading(new Pose2d(-56, 7, Math.toRadians(0)))
-                .addTemporalMarker(()->{
-                    slides.autonDispense();
-                    intake.autonIntakeTwo();
+                .lineToLinearHeading(new Pose2d(-51, 7, Math.toRadians(0)))
+                .addTemporalMarker(() -> {
                     intake.startIntake();
+                    intake.autonIntakeIn();
                 })
-                .waitSeconds(2.5)
-                .setReversed(false)
-                .splineTo(new Vector2d(12, 1), Math.toRadians(0))
-                .waitSeconds(1)
+                .waitSeconds(0.25)
+                .addTemporalMarker(() -> {
+                    intake.autonIntakeOut();
+                })
+                .waitSeconds(0.25)
+                .addTemporalMarker(() -> {
+                    intake.autonIntakeIn();
+                })
+                .waitSeconds(0.25)
+                .addTemporalMarker(() -> {
+                    intake.autonIntakeOut();
+                    intake.flipUp();
+                })
+                .lineToLinearHeading(new Pose2d(12, 12, Math.toRadians(0)))
+                .addTemporalMarker(() -> {
+                    slides.autonExtend();
+                })
+                .lineToLinearHeading(new Pose2d(x2+6, y2c, Math.toRadians(0)))
                 .addTemporalMarker(() -> {
                     slides.autonDispense();
-                    intake.autonIntakeFlipUp();
-                    slides.autonClamp(30);
-                    slides.autonOuttakeSequence2(200);
-                    intake.stopIntake(200);
                 })
-                .waitSeconds(0.2)
-                .splineTo(new Vector2d(x2, y2c), Math.toRadians(0))
-                .waitSeconds(.1)
-                .back(4)
-                .build();
-
-        TrajectorySequence cycle2 = drive.trajectorySequenceBuilder(transition2.end())
-                .setReversed(true)
-                .splineTo(new Vector2d(-60, 1), Math.toRadians(180))
-//                .lineToLinearHeading(new Pose2d(-56, 7, Math.toRadians(0)))
-                .addTemporalMarker(()->{
-                    slides.autonDispense();
-                    intake.autonIntakeTwo();
-                    intake.startIntake();
-                })
-                .waitSeconds(2.5)
-                .setReversed(false)
-                .splineTo(new Vector2d(12, 0), Math.toRadians(0))
-                .waitSeconds(1)
+                .waitSeconds(0.5)
                 .addTemporalMarker(() -> {
-                    slides.autonDispense();
-                    intake.autonIntakeFlipUp();
-                    slides.autonClamp(30);
-                    slides.autonOuttakeSequence2(200);
-                    intake.stopIntake(200);
+                    slides.autonRetract();
                 })
-                .waitSeconds(0.2)
-                .splineTo(new Vector2d(x2, y2c), Math.toRadians(0))
-                .waitSeconds(.1)
-                .back(4)
-                .build();
-
-        TrajectorySequence cycle3 = drive.trajectorySequenceBuilder(transition3.end())
-                .setReversed(true)
-                .splineTo(new Vector2d(-60, 2), Math.toRadians(180))
-//                .lineToLinearHeading(new Pose2d(-56, 7, Math.toRadians(0)))
-                .addTemporalMarker(()->{
-                    slides.autonDispense();
-                    intake.autonIntakeTwo();
-                    intake.startIntake();
-                })
-                .waitSeconds(2.5)
-                .setReversed(false)
-                .splineTo(new Vector2d(12, 0), Math.toRadians(0))
-                .waitSeconds(.5)
-                .addTemporalMarker(() -> {
-                    slides.autonDispense();
-                    intake.autonIntakeFlipUp();
-                    slides.autonClamp(30);
-                    slides.autonOuttakeSequence2(200);
-                    intake.stopIntake(200);
-                })
-                .waitSeconds(0.2)
-                .splineTo(new Vector2d(x2, y2a), Math.toRadians(0))
-                .waitSeconds(.1)
-                .back(4)
                 .build();
 
         while(opModeInInit()){
@@ -183,24 +154,21 @@ public class BlueTopCycleAuton extends LinearOpMode {
             case 1:
                 drive.followTrajectorySequence(case1);
                 drive.followTrajectorySequence(transition1);
-                drive.followTrajectorySequence(cycle1);
                 break;
             case 2:
                 drive.followTrajectorySequence(case2);
                 drive.followTrajectorySequence(transition2);
-                drive.followTrajectorySequence(cycle2);
                 break;
             case 3:
                 drive.followTrajectorySequence(case3);
                 drive.followTrajectorySequence(transition3);
-                drive.followTrajectorySequence(cycle3);
                 break;
             default:
                 drive.followTrajectorySequence(case1);
                 drive.followTrajectorySequence(transition1);
-                drive.followTrajectorySequence(cycle1);
                 break;
         }
+        drive.followTrajectorySequence(cycle);
         while(!isStopRequested() && opModeIsActive()){
             telemetry.addData("x", drive.getPoseEstimate().getX());
             telemetry.addData("y", drive.getPoseEstimate().getY());

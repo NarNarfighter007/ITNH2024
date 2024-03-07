@@ -37,11 +37,6 @@ public class Chassis {
         this.gamepad1 = gamepad1;
         this.imu = imu;
 
-//        frontLeftMotor = hardwareMap.get(DcMotor.class, "FLM02");
-//        backLeftMotor = hardwareMap.get(DcMotor.class, "BLM00");
-//        frontRightMotor = hardwareMap.get(DcMotor.class, "FRM03");
-//        backRightMotor = hardwareMap.get(DcMotor.class, "BRM01");
-
         frontLeftMotor = hardwareMap.get(DcMotor.class, "FLM12");
         backLeftMotor = hardwareMap.get(DcMotor.class, "BLM13");
         frontRightMotor = hardwareMap.get(DcMotor.class, "FRM02");
@@ -49,11 +44,6 @@ public class Chassis {
 
         backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-//        frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     //AUTON CONSTRUCTOR
@@ -61,10 +51,6 @@ public class Chassis {
         this.gamepad1 = gamepad1;
         this.imu = imu;
         this.headingOffset = headingOffset;
-//        frontLeftMotor = hardwareMap.get(DcMotor.class, "FLM02");
-//        backLeftMotor = hardwareMap.get(DcMotor.class, "BLM00");
-//        frontRightMotor = hardwareMap.get(DcMotor.class, "FRM03");
-//        backRightMotor = hardwareMap.get(DcMotor.class, "BRM01");
 
         frontLeftMotor = hardwareMap.get(DcMotor.class, "FLM12");
         backLeftMotor = hardwareMap.get(DcMotor.class, "BLM13");
@@ -124,145 +110,6 @@ public class Chassis {
         }
     }
 
-    public void moveForward(){
-        frontLeftMotor.setPower(autonDriveSpeed);
-        backLeftMotor.setPower(autonDriveSpeed);
-        frontRightMotor.setPower(autonDriveSpeed);
-        backRightMotor.setPower(autonDriveSpeed);
-    }
-
-    public  void moveBackward(){
-        frontLeftMotor.setPower(-autonDriveSpeed);
-        backLeftMotor.setPower(-autonDriveSpeed);
-        frontRightMotor.setPower(-autonDriveSpeed);
-        backRightMotor.setPower(-autonDriveSpeed);
-    }
-
-    public void strafeLeft(){
-        frontLeftMotor.setPower(-autonDriveSpeed);
-        backLeftMotor.setPower(autonDriveSpeed);
-        frontRightMotor.setPower(autonDriveSpeed);
-        backRightMotor.setPower(-autonDriveSpeed);
-    }
-
-    public void strafeRight(){
-        frontLeftMotor.setPower(autonDriveSpeed);
-        backLeftMotor.setPower(-autonDriveSpeed);
-        frontRightMotor.setPower(-autonDriveSpeed);
-        backRightMotor.setPower(autonDriveSpeed);
-    }
-
-    public void stop(){
-        frontLeftMotor.setPower(0);
-        backLeftMotor.setPower(0);
-        frontRightMotor.setPower(0);
-        backRightMotor.setPower(0);
-    }
-
-    public void turnLeft(int degrees){
-
-    }
-
-    public void turnRight(int degrees){
-
-    }
-
-    public void lineTo(int targetX, int targetY) {
-            double targetAngle = Math.toDegrees(Math.asin(targetY / targetX));
-            double y, x;
-            if (targetX > targetY) {
-                x = 1;
-                y = 1 / targetX;
-            } else {
-                y = 1;
-                x = 1 / targetY;
-            }
-            double rx = 0;
-
-            double botHeading = Math.toRadians(-imu.getHeadingFirstAngleDeg());
-
-            double rotX = x * Math.cos(botHeading) - y * Math.sin(botHeading);
-            double rotY = x * Math.sin(botHeading) + y * Math.cos(botHeading);
-
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-
-            double frontLeftPower = (rotY + rotX + rx) / denominator;
-            double backLeftPower = (rotY - rotX + rx) / denominator;
-            double frontRightPower = (rotY - rotX - rx) / denominator;
-            double backRightPower = (rotY + rotX - rx) / denominator;
-
-//        scaleFactor = driveSpeed + gamepad1.right_trigger * (1 - driveSpeed);
-            scaleFactor = autonDriveSpeed;
-            frontLeftMotor.setPower(frontLeftPower * scaleFactor);
-            backLeftMotor.setPower(backLeftPower * scaleFactor);
-            frontRightMotor.setPower(frontRightPower * scaleFactor);
-            backRightMotor.setPower(backRightPower * scaleFactor);
-    }
-
-    @Deprecated
-    public void forward_inches(double inches, double tolerance) {
-        double tolerance_r = tolerance * ticsPerInch_r; // update tolerance to be in ticsPerInch instead of inches
-        double tolerance_l = tolerance * ticsPerInch_l;
-
-        // rightDrive PID init
-        double target_r = (inches * ticsPerInch_r) + frontRightMotor.getCurrentPosition();
-        double error_r = target_r - frontRightMotor.getCurrentPosition();
-        double power_r = 0;
-        double errorSum_r = 0;
-        double lastError_r = 0;
-        double errorSlope_r = 0;
-
-        // leftDrive PID init
-        double target_l = (inches * ticsPerInch_l) + frontLeftMotor.getCurrentPosition();
-        double error_l = target_l - frontLeftMotor.getCurrentPosition();
-        double power_l = 0;
-        double errorSum_l = 0;
-        double lastError_l = 0;
-        double errorSlope_l = 0;
-
-        long curTime = System.nanoTime();
-        long lastTime;
-
-        while (this.opMode.opModeIsActive() && (Math.abs(error_r) > tolerance_r || Math.abs(error_l) > tolerance_l)) {
-            lastTime = curTime;
-            curTime = System.nanoTime();
-
-            error_r = target_r - frontRightMotor.getCurrentPosition();
-            error_l = target_l - frontLeftMotor.getCurrentPosition();
-
-            errorSlope_r = (error_r - lastError_r) / (curTime - lastTime);
-            errorSlope_l = (error_l - lastError_l) / (curTime - lastTime);
-            power_r = error_r * this.kp + errorSum_r * this.ki  + errorSlope_r * this.kd;
-            power_l = error_l * this.kp + errorSum_l * this.ki  + errorSlope_l * this.kd;
-
-            // FTC Dashboard Telemetry
-            TelemetryPacket packet = new TelemetryPacket();
-            packet.put("currentPos_r", frontRightMotor.getCurrentPosition() / ticsPerInch_r);
-            packet.put("currentPos_l", frontLeftMotor.getCurrentPosition() / ticsPerInch_l);
-            packet.put("target", inches);
-            packet.put("power_r", power_r);
-            packet.put("error_r", error_r);
-            packet.put("error_sum_r", errorSum_r);
-            packet.put("error_slope_r", errorSlope_r);
-            packet.put("power_l", power_l);
-            packet.put("error_l", error_l);
-            packet.put("error_sum_l", errorSum_l);
-            packet.put("error_slope_l", errorSlope_l);
-            FtcDashboard dashboard = FtcDashboard.getInstance();
-            dashboard.sendTelemetryPacket(packet);
-            setRightPower(power_r);
-            setLeftPower(power_l);
-            errorSum_r += error_r;
-            errorSum_l += error_l;
-            errorSum_r = clampErrorSum(errorSum_r);
-            errorSum_l = clampErrorSum(errorSum_l);
-
-            lastError_r = error_r;
-            lastError_l = error_l;
-        }
-        this.stopDrive();
-    }
-
     public void forward_inches(double inches){
 //        inches /= 2;
         int leftPos = backLeftMotor.getCurrentPosition(), rightPos = -frontRightMotor.getCurrentPosition();
@@ -282,67 +129,6 @@ public class Chassis {
             }
         }
         stopDrive();
-    }
-    @Deprecated
-    public void backward_inches(double inches, double tolerance) {
-        double tolerance_r = tolerance * backwardTicsPerInch_r; // update tolerance to be in tics not inches
-        double tolerance_l = tolerance * backwardTicsPerInch_l;
-
-        // rightDrive PID init
-        double target_r = frontRightMotor.getCurrentPosition() - (inches * backwardTicsPerInch_r);
-        double error_r = target_r - frontRightMotor.getCurrentPosition();
-        double power_r = 0;
-        double errorSum_r = 0;
-        double lastError_r = 0;
-        double errorSlope_r = 0;
-
-        // leftDrive PID init
-        double target_l = frontLeftMotor.getCurrentPosition() - (inches * backwardTicsPerInch_l);
-        double error_l = target_l - frontLeftMotor.getCurrentPosition();
-        double power_l = 0;
-        double errorSum_l = 0;
-        double lastError_l = 0;
-        double errorSlope_l = 0;
-
-        long curTime = System.nanoTime();
-        long lastTime;
-
-        while (this.opMode.opModeIsActive() && (Math.abs(error_r) > tolerance_r || Math.abs(error_l) > tolerance_l)) {
-            lastTime = curTime;
-            curTime = System.nanoTime();
-
-            error_r = target_r - frontRightMotor.getCurrentPosition();
-            error_l = target_l - frontLeftMotor.getCurrentPosition();
-
-            errorSlope_r = (error_r - lastError_r) / (curTime - lastTime);
-            errorSlope_l = (error_l - lastError_l) / (curTime - lastTime);
-
-            power_r = error_r * this.kp + errorSum_r * this.ki + errorSlope_r * this.kd;;
-            power_l = error_l * this.kp + errorSum_l * this.ki + errorSlope_l * this.kd;;
-
-            // FTC Dashboard Telemetry
-            TelemetryPacket packet = new TelemetryPacket();
-            packet.put("currentPos_r", frontRightMotor.getCurrentPosition() / backwardTicsPerInch_r);
-            packet.put("currentPos_l", frontLeftMotor.getCurrentPosition() / backwardTicsPerInch_l);
-            packet.put("target", inches);
-            packet.put("power_r", power_r);
-            packet.put("error_r", error_r);
-            packet.put("power_l", power_l);
-            packet.put("error_l", error_l);
-            FtcDashboard dashboard = FtcDashboard.getInstance();
-            dashboard.sendTelemetryPacket(packet);
-
-            setLeftPower(power_l);
-            setRightPower(power_r);
-            errorSum_r += error_r;
-            errorSum_l += error_l;
-            errorSum_r = clampErrorSum(errorSum_r);
-            errorSum_l = clampErrorSum(errorSum_l);
-
-            lastError_r = error_r;
-            lastError_l = error_l;
-        }
-        this.stopDrive();
     }
 
     public void backward_inches(double inches){
@@ -364,42 +150,6 @@ public class Chassis {
             }
         }
         stopDrive();
-    }
-    @Deprecated
-    public void turn(float targetHeading, float tolerance) {
-        long startTime = System.nanoTime();
-        long curTime = System.nanoTime();
-        long lastTime;
-        double lastError = 0;
-        double errorSum = 0;
-        double error = targetHeading - getHeading();
-        error = (int) (error / 180) * -360 + error;
-        double errorSlope = 0;
-        while (this.opMode.opModeIsActive() && (Math.abs(error) > tolerance || Math.abs(errorSlope) > slopeTolerance)) {
-            lastTime = curTime;
-            curTime = System.nanoTime();
-
-            error = targetHeading - getHeading();
-            error = (int) (error / 180) * -360 + error;
-            errorSlope = (error - lastError) / (curTime - lastTime);
-            double power = error * this.turnKp + errorSum * this.turnKi + errorSlope * this.turnKd;
-            TelemetryPacket packet = new TelemetryPacket();
-            packet.put("currentHeading", getHeading());
-            packet.put("targetHeading", targetHeading);
-            packet.put("power", power);
-            packet.put("curTime", (curTime - startTime) / 1000000000f);
-            packet.put("errorSum", errorSum);
-            FtcDashboard dashboard = FtcDashboard.getInstance();
-            dashboard.sendTelemetryPacket(packet);
-            setLeftPower(-power);
-            setRightPower(power);
-            errorSum += error;
-            if (this.turnIntegralCap > 0 && Math.abs(errorSum) > this.turnIntegralCap) {
-                errorSum = Math.signum(errorSum) * this.turnIntegralCap;
-            }
-            lastError = error;
-        }
-        this.stopDrive();
     }
 
     public void turnTo(double targetHeading, String direction){

@@ -22,7 +22,7 @@ public class Intake {
     ElapsedTime timer = new ElapsedTime();
     int intakePos = 0, intakePos2;
     public double intakeFlipUp = .73, intakeFlipDown = 0.1, emergencyClosed = .65, emergencyOpen = 0.11;
-    double intakeLOut = .65, intakeLIn = 0,  intakeROut = .15, intakeRIn = .8;
+    double intakeLOut = 1, intakeLIn = .2,  intakeROut = .0, intakeRIn = .8;
     boolean intakingTwo = false, transferringTwo = false, intakingStack = false;
     final double intakePower = 0.8, transferPower = 1.0;
     double time, startTime;
@@ -47,21 +47,6 @@ public class Intake {
     }
 
     public void runIntake(){
-//        if(gamepad1.right_bumper) {
-//            intakeMotor.setPower(intakePower);
-//        } else if(gamepad1.right_trigger > 0.2){
-//            intakeMotor.setPower(-intakePower);
-//        } else if(!intakingTwo){
-//            intakeMotor.setPower(0);
-//        }
-//
-//        if(gamepad1.left_bumper){
-//            transferServo.setPower(transferPower);
-//        } else if(gamepad1.left_trigger > 0.2){
-//            transferServo.setPower(-transferPower);
-//        } else if(!transferringTwo){
-//            transferServo.setPower(0);
-//        }
         if(gamepad1.right_trigger > 0.2){
             intakeMotor.setPower(intakePower);
             transferServo.setPower(transferPower);
@@ -69,7 +54,6 @@ public class Intake {
         } else if(gamepad1.left_trigger > 0.2){
             intakeMotor.setPower(-intakePower);
             transferServo.setPower(-transferPower);
-//            conveyorServo.setPower(-transferPower);
         } else if(!intakingTwo){
             intakeMotor.setPower(0);
             transferServo.setPower(0);
@@ -119,17 +103,6 @@ public class Intake {
     public void flipUp(){
         intakeFlipServo.setPosition(intakeFlipDown);
     }
-    @Deprecated
-    public void intakeOne(){
-        if(intakeFlipServo.getPosition() == intakeFlipDown){
-            stackIntakeL.setPosition(intakeLIn);
-            stackIntakeR.setPosition(intakeRIn);
-            timer.reset();
-            while(timer.milliseconds() < 200){}
-            stackIntakeL.setPosition(intakeLOut);
-            stackIntakeR.setPosition(intakeROut);
-        }
-    }
 
     public void autonIntakeFlipDown(){
         intakeFlipServo.setPosition(intakeFlipDown);
@@ -152,11 +125,20 @@ public class Intake {
     public void startIntake(){
         intakeMotor.setPower(intakePower);
         transferServo.setPower(transferPower);
+        conveyorServo.setPower(transferPower);
     }
 
-    public void stopIntake(){
-        intakeMotor.setPower(0);
-        transferServo.setPower(0);
+    public void stopIntake(int delayMillis){
+        Timer stopIntakeTimer = new Timer();
+        TimerTask stopIntake = new TimerTask(){
+            @Override
+            public void run() {
+                intakeMotor.setPower(0);
+                transferServo.setPower(0);
+                conveyorServo.setPower(0);
+            }
+        };
+
     }
     public void startReverseIntake(){
         intakeMotor.setPower(-0.2);
@@ -166,13 +148,13 @@ public class Intake {
         intakeMotor.setPower(0);
     }
 
-    public void intakeTwo(){
+    public void autonIntakeTwo(){
         Timer intakeTwoTimer = new Timer();
 
         intakeTwoTimer.schedule(intakeIn1, 0);
-        intakeTwoTimer.schedule(intakeOut1, 700);
-        intakeTwoTimer.schedule(intakeIn2, 1400);
-        intakeTwoTimer.schedule(intakeOut2, 2100);
+        intakeTwoTimer.schedule(intakeOut1, 900);
+        intakeTwoTimer.schedule(intakeIn2, 1800);
+        intakeTwoTimer.schedule(intakeOut2, 2700);
     }
 
     TimerTask intakeIn1 = new TimerTask() {

@@ -12,14 +12,14 @@ import org.firstinspires.ftc.teamcode.hardware.TeamIMU;
 import org.firstinspires.ftc.teamcode.hardware.Vision;
 
 @TeleOp
-public class Teleop extends OpMode{
-        Chassis chassis;
-        Slides slides;
-        TeamIMU imu;
-        Intake intake;
-        Vision vision;
-        Hang hang;
-        Airplane airplane;
+public class RedTeleop extends OpMode{
+    Chassis chassis;
+    Slides slides;
+    TeamIMU imu;
+    Intake intake;
+    Vision vision;
+    Hang hang;
+    Airplane airplane;
 
     @Override
     public void init() {
@@ -30,6 +30,8 @@ public class Teleop extends OpMode{
 //        vision = new Vision(hardwareMap);
         hang = new Hang(hardwareMap, gamepad1, gamepad2);
         airplane = new Airplane(hardwareMap, gamepad1, gamepad2);
+
+        chassis.setHeadingOffset(-90);
     }
 
     @Override

@@ -15,7 +15,7 @@ public class Chassis {
     Gamepad gamepad1;
     LinearOpMode opMode;
     TeamIMU imu;
-    double headingOffset = 0;
+    double headingOffset = 0; //-90 for red teleop  90 for blue teleop
     double autonDriveSpeed = 0.3, teleopDriveSpeed = 0.8, scaleFactor = 1.0, normalSpeed = .8, slowSpeed = .3;
     final double driveSpeed = 0.6;
     public static double ticsPerInch = 1881;
@@ -108,6 +108,10 @@ public class Chassis {
         } else{
             teleopDriveSpeed = normalSpeed;
         }
+    }
+
+    public void setHeadingOffset(double headingOffset){
+        this.headingOffset = headingOffset;
     }
 
     public void forward_inches(double inches){

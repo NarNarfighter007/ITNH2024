@@ -32,7 +32,7 @@ public class Slides {
     public String outtakePos = "Horizontal", fourbarPos = "Out";
     public int pixelLayers = 0, pixelLayerTicks = 315, pixelLayerOffset = 180;
     ElapsedTime timer = new ElapsedTime(), timer2 = new ElapsedTime(), delay = new ElapsedTime(),
-            clampTimer = new ElapsedTime(), outtakeDelay = new ElapsedTime(), retractDelayTimer = new ElapsedTime();
+            clampTimer = new ElapsedTime(), fbRetractDelayTimer = new ElapsedTime(), retractDelayTimer = new ElapsedTime();
     boolean toggle = false, debounce = false, debounce2 = false, holdIn = false;
     double time, startTime, fbTime, clampTime;
     Intake intake;
@@ -77,7 +77,7 @@ public class Slides {
         slideMotorL.setPower(slidePower);
     }
 
-    double startRetractTime = 0, retractTime = 0;
+    double startRetractTime = 0, retractTime = 0, startFBRetractTime;
     public void runSlidesPixelLayer(){
         slideMotorL.setPower(slidePower);
         retractTime = retractDelayTimer.milliseconds();
@@ -102,16 +102,23 @@ public class Slides {
 
         time = timer2.milliseconds();
         if (gamepad1.a) {
+            if(outtakePos.equals("Left"))
+                startFBRetractTime = fbRetractDelayTimer.milliseconds();
             startTime = time;
             outtakePos = "Horizontal";
             slideTargetPosition = down;
             pixelLayers = 0;
             startRetractTime = retractTime;
+            holdIn = false;
+
+
         } else if(gamepad1.x){
             if(getSlideCurPosL() < down + 50) {
                 startTime = time;
                 fbTime = delay.milliseconds();
             }
+            if(outtakePos.equals("Left"))
+                startFBRetractTime = fbRetractDelayTimer.milliseconds();
             fourbarPos = "Out";
         } else if(gamepad1.b) {
             if(getSlideCurPosL() < down + 50) {
@@ -138,12 +145,12 @@ public class Slides {
         if(gamepad1.x && !debounce2){
             if(pixelLayers == 1){
                 fourbarPos = "Out";
-                holdIn = false;
                 pixelLayers--;
                 startRetractTime = retractTime;
             }
             if(pixelLayers > 1) pixelLayers--;
             debounce2 = true;
+            holdIn = false;
         } else if(!gamepad1.x && debounce2){
             debounce2 = false;
         }
@@ -215,7 +222,7 @@ public class Slides {
             fourbarServo.setPosition(fourbarOuttakeDown);
         } else if(getSlideCurPosL() < slidesMin && slideTargetPosition > slidesMin){
             fourbarServo.setPosition(fourbarIntakeUp);
-        } else if(getSlideCurPosL() >= fourbarMin && slideTargetPosition <= slidesMin){
+        } else if(getSlideCurPosL() >= fourbarMin && slideTargetPosition <= slidesMin && fbRetractDelayTimer.milliseconds() > startFBRetractTime + 200 ){
             fourbarServo.setPosition(fourbarMid);
         } else if(getSlideTargetPos() <= slidesMin && holdIn && getSlideCurPosL() < fourbarMin){
             fourbarServo.setPosition(fourbarIntakeDown);
@@ -275,7 +282,7 @@ public class Slides {
     }
 
     public void autonExtendHigh(){
-        slideMotorL.setTargetPosition(pixelLayerTicks * 1 + pixelLayerOffset + 120);
+        slideMotorL.setTargetPosition(pixelLayerTicks * 2 + pixelLayerOffset + 120);
         slideMotorL.setPower(slidePower);
     }
 
@@ -318,6 +325,13 @@ public class Slides {
         pitchServo.setPosition(boxAlmostDown);
     }
 
+    public void autonRollVertical(){
+        rollServo.setPosition(rollVertical);
+    }
+
+    public void autonRollHorizontal(){
+        rollServo.setPosition(rollHorizontal);
+    }
     public void autonClamp(int delayMillis){
         Timer clampSequence = new Timer();
         clampSequence.schedule(clamp, 0 + delayMillis);
@@ -360,10 +374,10 @@ public class Slides {
         outtakeSequence.schedule(fbOut, 1000 + delayMillis);
         outtakeSequence.schedule(dispense, 3000 + delayMillis);
         //back up
-        outtakeSequence.schedule(fbIntakeUp, 3500 + delayMillis);
-        outtakeSequence.schedule(pitchAlmostDown, 3800 + delayMillis);
-        outtakeSequence.schedule(retract, 4100 + delayMillis);
-        outtakeSequence.schedule(open, 4100 + delayMillis);
+        outtakeSequence.schedule(fbIntakeUp, 4000 + delayMillis);
+        outtakeSequence.schedule(pitchAlmostDown, 4300 + delayMillis);
+        outtakeSequence.schedule(retract, 4600 + delayMillis);
+        outtakeSequence.schedule(open, 4600 + delayMillis);
     }
     TimerTask hover = new TimerTask() {
         @Override
@@ -426,9 +440,9 @@ public class Slides {
         outtakeSequence2.schedule(fbOut2, 1000 + delayMillis);
         outtakeSequence2.schedule(dispense2, 3000 + delayMillis);
         //back up
-        outtakeSequence2.schedule(fbIntakeUp2, 3600 + delayMillis);
-        outtakeSequence2.schedule(pitchAlmostDown2, 3800 + delayMillis);
-        outtakeSequence2.schedule(retract2, 4000 + delayMillis);
+        outtakeSequence2.schedule(fbIntakeUp2, 5500 + delayMillis);
+        outtakeSequence2.schedule(pitchAlmostDown2, 5700 + delayMillis);
+        outtakeSequence2.schedule(retract2, 5900 + delayMillis);
     }
     TimerTask open2 = new TimerTask(){
 
@@ -447,7 +461,7 @@ public class Slides {
     TimerTask extend2 = new TimerTask(){
         @Override
         public void run() {
-            autonExtendHigh();
+            autonExtend();
         }
     };
     TimerTask fbOut2 = new TimerTask() {
@@ -483,6 +497,41 @@ public class Slides {
         }
     };
 
+    public void autonOuttakeSequenceHorizontal(int delayMillis){
+        Timer outtakeSequence = new Timer();
+
+        outtakeSequence.schedule(grab, delayMillis);
+        outtakeSequence.schedule(hover, 100 + delayMillis);
+        outtakeSequence.schedule(extendHigh, 400 + delayMillis);
+        outtakeSequence.schedule(fbOut, 1000 + delayMillis);
+        outtakeSequence.schedule(horizontal, 1400 + delayMillis);
+        outtakeSequence.schedule(dispense, 3000 + delayMillis);
+        //back up
+        outtakeSequence.schedule(vertical, 3300 + delayMillis);
+        outtakeSequence.schedule(fbIntakeUp, 3500 + delayMillis);
+        outtakeSequence.schedule(pitchAlmostDown, 3800 + delayMillis);
+        outtakeSequence.schedule(retract, 4100 + delayMillis);
+        outtakeSequence.schedule(open, 4100 + delayMillis);
+    }
+
+    TimerTask extendHigh = new TimerTask() {
+        @Override
+        public void run() {
+            autonExtendHigh();
+        }
+    };
+    TimerTask horizontal = new TimerTask() {
+        @Override
+        public void run() {
+            rollServo.setPosition(rollHorizontal);
+        }
+    };
+    TimerTask vertical = new TimerTask() {
+        @Override
+        public void run() {
+            rollServo.setPosition(rollVertical);
+        }
+    };
     public int getSlideCurPosL(){
         return slideMotorL.getCurrentPosition();
     }

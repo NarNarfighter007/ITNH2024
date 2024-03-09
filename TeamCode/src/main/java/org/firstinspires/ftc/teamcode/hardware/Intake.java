@@ -138,7 +138,7 @@ public class Intake {
                 conveyorServo.setPower(0);
             }
         };
-
+        stopIntakeTimer.schedule(stopIntake, delayMillis);
     }
     public void startReverseIntake(){
         intakeMotor.setPower(-0.2);

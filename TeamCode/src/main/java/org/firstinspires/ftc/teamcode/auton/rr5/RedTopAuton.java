@@ -64,7 +64,7 @@ public class RedTopAuton extends LinearOpMode {
                 .turn(Math.toRadians(80))
                 .lineTo(new Vector2d(x1c, y1c))
                 .addTemporalMarker(()->{
-                    slides.autonOuttakeSequence1(600);
+                    slides.autonOuttakeSequence1(450);
                 })
                 .setReversed(false)
                 .splineTo(new Vector2d(x2, y2c-4), Math.toRadians(0))

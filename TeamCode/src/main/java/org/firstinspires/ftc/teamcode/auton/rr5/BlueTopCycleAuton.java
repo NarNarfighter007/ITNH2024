@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 public class BlueTopCycleAuton extends LinearOpMode {
     public static int x1a = 23, y1a = 37, t1a = -90, x2 = 52, y2a = 42;
     public static int x1b = 18, y1b = 26, t1b = -90, y2b = 37;
-    public static int x1c = 4, y1c = 34, t1c = -90, y2c = 30;
+    public static int x1c = 8, y1c = 34, t1c = -90, y2c = 30;
     int pos = 1;
     Intake intake;
     Slides slides;
@@ -114,7 +114,7 @@ public class BlueTopCycleAuton extends LinearOpMode {
                 .waitSeconds(0.2)
                 .splineTo(new Vector2d(x2, y2c), Math.toRadians(0))
                 .waitSeconds(.1)
-                .back(4)
+                .back(6)
                 .build();
 
         TrajectorySequence cycle2 = drive.trajectorySequenceBuilder(transition2.end())
@@ -140,7 +140,7 @@ public class BlueTopCycleAuton extends LinearOpMode {
                 .waitSeconds(0.2)
                 .splineTo(new Vector2d(x2, y2c), Math.toRadians(0))
                 .waitSeconds(.1)
-                .back(4)
+                .back(6)
                 .build();
 
         TrajectorySequence cycle3 = drive.trajectorySequenceBuilder(transition3.end())

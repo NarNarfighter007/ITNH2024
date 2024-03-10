@@ -15,9 +15,9 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 @Config
 @Autonomous(group = "Auton")
 public class RedTopCycleAuton extends LinearOpMode {
-    public static int x1a = 22, y1a = -37, t1a = -90, x2 = 51, y2a = -40+1;
-    public static int x1b = 18, y1b = -30, t1b = -90, y2b = -33+1;
-    public static int x1c = 8, y1c = -34, t1c = -90, y2c = -27+1;
+    public static int x1a = 22, y1a = -37, t1a = -90, x2 = 53, y2a = -41;
+    public static int x1b = 18, y1b = -30, t1b = -90, y2b = -33;
+    public static int x1c = 8, y1c = -34, t1c = -90, y2c = -27;
     int pos = 1;
     Intake intake;
     Slides slides;
@@ -30,7 +30,7 @@ public class RedTopCycleAuton extends LinearOpMode {
         camera = new Camera(hardwareMap, "RED");
         slides = new Slides(hardwareMap, gamepad1, gamepad2);
 
-        Pose2d startPose = new Pose2d(12, -60, Math.toRadians(startHeading));
+        Pose2d startPose = new Pose2d(12, -61, Math.toRadians(startHeading));
         drive.setPoseEstimate(startPose);
         TrajectorySequence case1 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
@@ -51,7 +51,7 @@ public class RedTopCycleAuton extends LinearOpMode {
                 })
                 .forward(8)
                 .setReversed(false)
-                .splineTo(new Vector2d(x2+1, y2b), Math.toRadians(0))
+                .splineTo(new Vector2d(x2+1, y2b-4), Math.toRadians(0))
                 .waitSeconds(0.75)
                 .build();
         TrajectorySequence case3 = drive.trajectorySequenceBuilder(startPose)
@@ -60,7 +60,7 @@ public class RedTopCycleAuton extends LinearOpMode {
                 .turn(Math.toRadians(80))
                 .lineTo(new Vector2d(x1c, y1c))
                 .addTemporalMarker(()->{
-                    slides.autonOuttakeSequence1(600);
+                    slides.autonOuttakeSequence1(200);
                 })
                 .setReversed(false)
                 .splineTo(new Vector2d(x2, y2c-4), Math.toRadians(0))

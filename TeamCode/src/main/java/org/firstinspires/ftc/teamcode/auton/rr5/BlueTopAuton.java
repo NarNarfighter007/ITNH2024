@@ -42,6 +42,7 @@ public class BlueTopAuton extends LinearOpMode {
                 .setReversed(false)
                 .splineTo(new Vector2d(x2, y2a), Math.toRadians(0))
                 .waitSeconds(0.5)
+                .strafeLeft(18)
                 .build();
         TrajectorySequence case2 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
@@ -53,6 +54,7 @@ public class BlueTopAuton extends LinearOpMode {
                 .setReversed(false)
                 .splineTo(new Vector2d(x2+1, y2b), Math.toRadians(0))
                 .waitSeconds(0.5)
+                .strafeLeft(23)
                 .build();
         TrajectorySequence case3 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
@@ -65,6 +67,7 @@ public class BlueTopAuton extends LinearOpMode {
                 .setReversed(false)
                 .splineTo(new Vector2d(x2, y2c), Math.toRadians(0))
                 .waitSeconds(0.5)
+                .strafeLeft(28)
                 .build();
 
         while(opModeInInit()){

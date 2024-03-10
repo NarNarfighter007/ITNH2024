@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 public class BlueBotAuton extends LinearOpMode {
     public static int x1a = 23, y1a = 37, t1a = -90, x2 = 52, y2a = 48;
     public static int x1b = 18, y1b = 26, t1b = -90, y2b = 42;
-    public static int x1c = 4, y1c = 34, t1c = -90, y2c = 36;
+    public static int x1c = 4, y1c = 34, t1c = -90, y2c = 38;
     int pos = 1;
     Intake intake;
     Slides slides;
@@ -39,9 +39,9 @@ public class BlueBotAuton extends LinearOpMode {
                 .back(4)
                 .forward(8)
                 .setReversed(false)
-                .splineTo(new Vector2d(-36, 56), Math.toRadians(0))
-                .lineTo(new Vector2d(-24, 56))
-                .lineTo(new Vector2d(12, 60))
+                .splineTo(new Vector2d(-36, 57), Math.toRadians(0))
+                .lineTo(new Vector2d(-24, 57))
+                .lineTo(new Vector2d(12, 62))
 //                .lineTo(new Vector2d(20, 56))
                 .addTemporalMarker(() -> {
                     intake.autonIntakeFlipUp();
@@ -57,7 +57,7 @@ public class BlueBotAuton extends LinearOpMode {
                 .build();
         TrajectorySequence case2 = drive.trajectorySequenceBuilder(startPose)
                 .setReversed(true)
-                .splineTo(new Vector2d(-36, 26), Math.toRadians(-90))
+                .splineTo(new Vector2d(-36, 28), Math.toRadians(-90))
                 .forward(10)
                 .setReversed(false)
                 .splineTo(new Vector2d(-36, 56), Math.toRadians(0))
@@ -81,9 +81,9 @@ public class BlueBotAuton extends LinearOpMode {
                 .splineTo(new Vector2d(-48, 34), Math.toRadians(-90))
                 .forward(8)
                 .setReversed(false)
-                .splineTo(new Vector2d(-36, 56), Math.toRadians(0))
-                .lineTo(new Vector2d(-24, 56))
-                .lineTo(new Vector2d(12, 60))
+                .splineTo(new Vector2d(-36, 57), Math.toRadians(0))
+                .lineTo(new Vector2d(-24, 57))
+                .lineTo(new Vector2d(12, 61))
 //                .lineTo(new Vector2d(20, 56))
                 .addTemporalMarker(() -> {
                     intake.autonIntakeFlipUp();
